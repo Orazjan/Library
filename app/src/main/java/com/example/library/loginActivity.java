@@ -26,7 +26,7 @@ public class loginActivity extends AppCompatActivity {
     private Button loginBtn;
     private EditText phoneInput, passwordInput;
     private ProgressDialog loadingBar;
-    private TextView adminLink, notAdminLink, textForNumber;
+    private TextView adminLink, notAdminLink;
     private String parentDbName = "Users";
 
 
@@ -40,7 +40,6 @@ public class loginActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.login_password);
         adminLink = findViewById(R.id.adminLink);
         notAdminLink = findViewById(R.id.notAdminLink);
-        textForNumber = findViewById(R.id.textForNumber);
         loadingBar = new ProgressDialog(this);
         Paper.init(this);
 
@@ -78,7 +77,7 @@ public class loginActivity extends AppCompatActivity {
         }
     }
 
-    private void ValidateUser(final String usernumber, final String userpassword) {
+    private void ValidateUser(final String phone, final String password) {
 
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
@@ -86,26 +85,24 @@ public class loginActivity extends AppCompatActivity {
         RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(parentDbName).child(usernumber).exists()) {
-                    Users usersData = dataSnapshot.child(parentDbName).child(usernumber).getValue(Users.class);
+                if (dataSnapshot.child(parentDbName).child(phone).exists()) {
+                    Users usersData = dataSnapshot.child(parentDbName).child(phone).getValue(Users.class);
                     assert usersData != null;
 
-                    if (usersData.getPhone().equals(usernumber)) {
-                        if (usersData.getPassword().equals(userpassword)) {
+                    if (usersData.getPhone().equals(phone)) {
+                        if (usersData.getPassword().equals(password)) {
                             if (parentDbName.equals("Users")) {
                                 loadingBar.dismiss();
                                 Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-                                textForNumber.setText(usersData.getPhone());
                                 Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
                                 startActivity(homeIntent);
+                            } else if (parentDbName.equals("Admins")) {
+                                loadingBar.dismiss();
+                                Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
+
+                                Intent adminIntent = new Intent(loginActivity.this, AdminCategoryActiviti.class);
+                                startActivity(adminIntent);
                             }
-                        } else if (parentDbName.equals("Admins")) {
-                            loadingBar.dismiss();
-                            Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-
-                            Intent homeIntent = new Intent(loginActivity.this, AdminCategoryActiviti.class);
-                            startActivity(homeIntent);
-
                         } else {
                             loadingBar.dismiss();
                             Toast.makeText(loginActivity.this, "Неверный пароль", Toast.LENGTH_SHORT).show();
@@ -113,7 +110,7 @@ public class loginActivity extends AppCompatActivity {
                     }
                 } else {
                     loadingBar.dismiss();
-                    Toast.makeText(loginActivity.this, "Аккаунт с номером " + usernumber + "не существует", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(loginActivity.this, "Аккаунт с номером " + phone + "не существует", Toast.LENGTH_SHORT).show();
 
                     Intent registerIntent = new Intent(loginActivity.this, regActivity.class);
                     startActivity(registerIntent);
