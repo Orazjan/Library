@@ -26,7 +26,7 @@ public class loginActivity extends AppCompatActivity {
     private Button loginBtn;
     private EditText phoneInput, passwordInput;
     private ProgressDialog loadingBar;
-    private TextView adminLink, notAdminLink;
+    private TextView adminLink, notAdminLink, checkHren;
     private String parentDbName = "Users";
 
 
@@ -40,6 +40,7 @@ public class loginActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.login_password);
         adminLink = findViewById(R.id.adminLink);
         notAdminLink = findViewById(R.id.notAdminLink);
+        checkHren = findViewById(R.id.checkHren);
         loadingBar = new ProgressDialog(this);
         Paper.init(this);
 
@@ -50,12 +51,14 @@ public class loginActivity extends AppCompatActivity {
             notAdminLink.setVisibility(View.VISIBLE);
             loginBtn.setText("Вход в панель администратора");
             parentDbName = "Admins";
+            checkHren.setText(parentDbName);
         });
         notAdminLink.setOnClickListener(view -> {
             adminLink.setVisibility(View.VISIBLE);
             notAdminLink.setVisibility(View.INVISIBLE);
             loginBtn.setText("Начать");
             parentDbName = "Users";
+            checkHren.setText(parentDbName);
         });
     }
 
@@ -91,18 +94,19 @@ public class loginActivity extends AppCompatActivity {
 
                     if (usersData.getPhone().equals(phone)) {
                         if (usersData.getPassword().equals(password)) {
-                            if (parentDbName.equals("Users")) {
-                                loadingBar.dismiss();
-                                Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-                                Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
-                                startActivity(homeIntent);
-                            } else if (parentDbName.equals("Admins")) {
+                            if (parentDbName.equals("Admins")) {
                                 loadingBar.dismiss();
                                 Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
 
                                 Intent adminIntent = new Intent(loginActivity.this, AdminCategoryActiviti.class);
                                 startActivity(adminIntent);
+                            } else if (parentDbName.equals("Users")) {
+                                loadingBar.dismiss();
+                                Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
+                                Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
+                                startActivity(homeIntent);
                             }
+
                         } else {
                             loadingBar.dismiss();
                             Toast.makeText(loginActivity.this, "Неверный пароль", Toast.LENGTH_SHORT).show();

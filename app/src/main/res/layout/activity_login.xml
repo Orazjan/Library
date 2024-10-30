@@ -8,6 +8,14 @@
     android:background="@color/bckgrnd"
     tools:context=".loginActivity">
 
+    <TextView
+        android:id="@+id/checkHren"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/appName"
+        android:layout_centerHorizontal="true"
+        android:text="Hren"
+        android:textSize="15sp" />
 
     <ImageView
         android:id="@+id/logo"
@@ -22,6 +30,7 @@
         />
 
     <TextView
+        android:id="@+id/appName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/logo"
