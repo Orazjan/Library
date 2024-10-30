@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class regActivity extends AppCompatActivity {
     Button regButton;
@@ -77,22 +75,19 @@ public class regActivity extends AppCompatActivity {
         dbr.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!(snapshot.child("Users").child(usernumber).child("usernumber").exists())) {
+                if (!(snapshot.child("Users").child(usernumber).exists())) {
                     HashMap<String, Object> usermap = new HashMap<>();
-                    usermap.put("usernumber", usernumber);
-                    usermap.put("username", username);
-                    usermap.put("userfam", userfam);
-                    usermap.put("userpassword", userpassword);
-                    dbr.child("Users").child(Objects.requireNonNull(usermap.get("usernumber")).toString()).updateChildren(usermap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(regActivity.this, "Аккаунт создан", Toast.LENGTH_SHORT).show();
-                                Intent loginintent = new Intent(regActivity.this, loginActivity.class);
-                                progressBar.dismiss();
-                                startActivity(loginintent);
+                    usermap.put("phone", usernumber);
+                    usermap.put("name", username);
+                    usermap.put("fam", userfam);
+                    usermap.put("password", userpassword);
+                    dbr.child("Users").child(usernumber).updateChildren(usermap).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(regActivity.this, "Аккаунт создан", Toast.LENGTH_SHORT).show();
+                            Intent loginintent = new Intent(regActivity.this, loginActivity.class);
+                            progressBar.dismiss();
+                            startActivity(loginintent);
 
-                            }
                         }
                     });
                 } else {

@@ -1,6 +1,5 @@
 package com.example.library;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ public class loginActivity extends AppCompatActivity {
     private String parentDbName = "Users";
 
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,30 +44,19 @@ public class loginActivity extends AppCompatActivity {
         loadingBar = new ProgressDialog(this);
         Paper.init(this);
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUser();
-            }
-        });
+        loginBtn.setOnClickListener(v -> loginUser());
 
-        adminLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adminLink.setVisibility(View.INVISIBLE);
-                notAdminLink.setVisibility(View.VISIBLE);
-                loginBtn.setText("Вход в панель администратора");
-                parentDbName = "Admins";
-            }
+        adminLink.setOnClickListener(view -> {
+            adminLink.setVisibility(View.INVISIBLE);
+            notAdminLink.setVisibility(View.VISIBLE);
+            loginBtn.setText("Вход в панель администратора");
+            parentDbName = "Admins";
         });
-        notAdminLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adminLink.setVisibility(View.VISIBLE);
-                notAdminLink.setVisibility(View.INVISIBLE);
-                loginBtn.setText("Начать");
-                parentDbName = "Users";
-            }
+        notAdminLink.setOnClickListener(view -> {
+            adminLink.setVisibility(View.VISIBLE);
+            notAdminLink.setVisibility(View.INVISIBLE);
+            loginBtn.setText("Начать");
+            parentDbName = "Users";
         });
     }
 
@@ -91,7 +78,7 @@ public class loginActivity extends AppCompatActivity {
         }
     }
 
-    private void ValidateUser(final String phone, final String password) {
+    private void ValidateUser(final String usernumber, final String userpassword) {
 
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
@@ -99,18 +86,18 @@ public class loginActivity extends AppCompatActivity {
         RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(parentDbName).child(phone).exists()) {
-                    Users usersData = dataSnapshot.child(parentDbName).child(phone).getValue(Users.class);
+                if (dataSnapshot.child(parentDbName).child(usernumber).exists()) {
+                    Users usersData = dataSnapshot.child(parentDbName).child(usernumber).getValue(Users.class);
                     assert usersData != null;
 
-                    if (usersData.getPhone().equals(phone)) {
-                        if (usersData.getPassword().equals(password)) {
+                    if (usersData.getPhone().equals(usernumber)) {
+                        if (usersData.getPassword().equals(userpassword)) {
                             if (parentDbName.equals("Users")) {
                                 loadingBar.dismiss();
                                 Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
                                 textForNumber.setText(usersData.getPhone());
-//                                Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
-//                                startActivity(homeIntent);
+                                Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
+                                startActivity(homeIntent);
                             }
                         } else if (parentDbName.equals("Admins")) {
                             loadingBar.dismiss();
@@ -126,7 +113,7 @@ public class loginActivity extends AppCompatActivity {
                     }
                 } else {
                     loadingBar.dismiss();
-                    Toast.makeText(loginActivity.this, "Аккаунт с номером " + phone + "не существует", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(loginActivity.this, "Аккаунт с номером " + usernumber + "не существует", Toast.LENGTH_SHORT).show();
 
                     Intent registerIntent = new Intent(loginActivity.this, regActivity.class);
                     startActivity(registerIntent);
