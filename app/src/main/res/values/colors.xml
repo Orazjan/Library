@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bckgrnd">#fdf0d5</color>
+    <color name="forText">#055011</color>
+    <color name="forBtn">#055011</color>
+</resources>

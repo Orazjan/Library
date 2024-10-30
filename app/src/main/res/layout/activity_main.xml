@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bckgrnd"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/this_is_logo_text"
+        android:src="@drawable/logo">
+
+    </ImageView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:text="@string/Slogan"
+        android:textColor="@color/forText"
+        android:textSize="20sp"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <Button
+        android:id="@+id/regBtn"
+        android:layout_width="700sp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="55sp"
+        android:layout_marginRight="55sp"
+        android:layout_marginBottom="10sp"
+        android:backgroundTint="@color/forBtn"
+        android:text="@string/reg"
+        android:textSize="23sp"
+
+        >
+
+
+    </Button>
+
+    <Button
+        android:id="@+id/glawBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/logbtn"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/forBtn"
+        android:text="Главное меню"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/logbtn"
+        android:layout_width="700sp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/regBtn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="55sp"
+        android:layout_marginRight="55sp"
+        android:layout_marginBottom="1sp"
+        android:backgroundTint="@color/forBtn"
+        android:text="@string/starttext"
+        android:textSize="23sp"
+
+        >
+
+    </Button>
+</RelativeLayout>

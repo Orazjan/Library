@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Library</string>
+    <string name="Slogan">Начните читать вместе с Library</string>
+    <string name="reg">Зарегестрироваться</string>
+    <string name="have_no_accaunt">Нет аккаунта?</string>
+    <string name="starttext">Начать</string>
+    <string name="HaveNoAccaunt">Нет аккаунта?</string>
+    <string name="this_is_logo_text">This is logo</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="enter_password">Пароль</string>
+    <string name="believe_me">Запомнить меня</string>
+    <string name="forget_password">Забыли пароль?</string>
+    <string name="enter_name">Введите имя</string>
+    <string name="enter_fami">Введите фамилию</string>
+</resources>
