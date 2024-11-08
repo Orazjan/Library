@@ -1,4 +1,4 @@
-package com.example.library;
+package com.example.library.UI.Users;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.library.R;
+import com.example.library.UI.loginActivity;
+import com.example.library.UI.regActivity;
 
 public class MainActivity extends AppCompatActivity {
     private Button regBtn, logBtn, homeBtn;

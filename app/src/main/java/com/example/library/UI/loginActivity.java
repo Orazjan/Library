@@ -1,4 +1,4 @@
-package com.example.library;
+package com.example.library.UI;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -13,7 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.library.R;
+import com.example.library.UI.Admin.AdminCategoryActiviti;
 import com.example.library.Model.Users;
+import com.example.library.UI.Users.HomeActiviti;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +29,7 @@ public class loginActivity extends AppCompatActivity {
     private Button loginBtn;
     private EditText phoneInput, passwordInput;
     private ProgressDialog loadingBar;
-    private TextView adminLink, notAdminLink, checkHren;
+    private TextView adminLink, notAdminLink;
     private String parentDbName = "Users";
 
 
@@ -40,7 +43,6 @@ public class loginActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.login_password);
         adminLink = findViewById(R.id.adminLink);
         notAdminLink = findViewById(R.id.notAdminLink);
-        checkHren = findViewById(R.id.checkHren);
         loadingBar = new ProgressDialog(this);
         Paper.init(this);
 
@@ -51,14 +53,12 @@ public class loginActivity extends AppCompatActivity {
             notAdminLink.setVisibility(View.VISIBLE);
             loginBtn.setText("Вход в панель администратора");
             parentDbName = "Admins";
-            checkHren.setText(parentDbName);
         });
         notAdminLink.setOnClickListener(view -> {
             adminLink.setVisibility(View.VISIBLE);
             notAdminLink.setVisibility(View.INVISIBLE);
             loginBtn.setText("Начать");
             parentDbName = "Users";
-            checkHren.setText(parentDbName);
         });
     }
 
