@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Hrenatina"
+        android:text="Вход"
         tools:layout_editor_absoluteX="91dp"
         tools:layout_editor_absoluteY="335dp" />
 </RelativeLayout>
