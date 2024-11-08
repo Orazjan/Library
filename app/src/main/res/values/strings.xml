@@ -12,4 +12,18 @@
     <string name="forget_password">Забыли пароль?</string>
     <string name="enter_name">Введите имя</string>
     <string name="enter_fami">Введите фамилию</string>
+    <string name="choose_Category">Выберите категорию</string>
+    <string name="Category_Fantasy">Фантакстика</string>
+    <string name="Category_Detektiw">Детективы</string>
+    <string name="Category_Romany">Романы</string>
+    <string name="Category_Poesiya">Поэзия</string>
+    <string name="Category_Ujasy">Ужасы</string>
+    <string name="Category_LoveRoman">Любовные романы</string>
+    <string name="Category_Proza">Проза</string>
+    <string name="Category_Trillery">Триллеры</string>
+    <string name="Category_Komiksy">Комиксы</string>
+    <string name="Category_Drama">Драма</string>
+    <string name="Category_Psy">Психология</string>
+    <string name="Category_Priklucheniye">Приключения</string>
+
 </resources>
