@@ -5,12 +5,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bckgrnd"
+    android:background="@drawable/fon"
     tools:context=".UI.regActivity">
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="100sp"
+        android:layout_width="wrap_content"
         android:layout_height="100sp"
         android:layout_marginStart="150sp"
         android:layout_marginTop="100sp"

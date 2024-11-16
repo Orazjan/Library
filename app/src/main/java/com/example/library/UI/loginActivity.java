@@ -89,6 +89,7 @@ public class loginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(parentDbName).child(phone).exists()) {
+                    String userName = dataSnapshot.child(parentDbName).child(phone).child("name").getValue(String.class);
                     Users usersData = dataSnapshot.child(parentDbName).child(phone).getValue(Users.class);
                     assert usersData != null;
 
@@ -104,6 +105,8 @@ public class loginActivity extends AppCompatActivity {
                                 loadingBar.dismiss();
                                 Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
                                 Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
+
+                                homeIntent.putExtra("userName", userName.toString());
                                 startActivity(homeIntent);
                             }
 
