@@ -42,7 +42,7 @@
         android:autofillHints="phone"
         android:background="@drawable/input_design"
         android:hint="@string/phone_number"
-        android:inputType="number"
+        android:inputType="text|numberPassword"
         android:padding="20sp"
         android:text="+996"
         android:textColor="@color/forText" />

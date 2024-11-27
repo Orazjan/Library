@@ -6,6 +6,9 @@ plugins {
 android {
     namespace = "com.example.library"
     compileSdk = 34
+    buildFeatures {
+        viewBinding = true
+    }
 
     defaultConfig {
         applicationId = "com.example.library"
@@ -42,9 +45,14 @@ dependencies {
     implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
-    implementation (libs.paperdb)
+    implementation(libs.paperdb)
     androidTestImplementation(libs.espresso.core)
     implementation(platform(libs.firebase.bom))
 
-
+//
+    implementation(libs.cloudinary.android)
+    implementation(libs.glide)
+    implementation(libs.constraintlayout.v220)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
 }

@@ -13,6 +13,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.library.R;
+import com.example.library.UI.Admin.AdminAddNewCategoryActivity;
+import com.example.library.UI.Admin.AdminCategoryActiviti;
 import com.example.library.UI.loginActivity;
 import com.example.library.UI.regActivity;
 
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent homeintent = new Intent(MainActivity.this, HomeActiviti.class);
+                Intent homeintent = new Intent(MainActivity.this, AdminCategoryActiviti.class);
                 startActivity(homeintent);
             }
         });

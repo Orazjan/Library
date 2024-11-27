@@ -4,12 +4,14 @@ import android.content.Intent;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.text.TextUtils;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -29,26 +31,27 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import android.app.ProgressDialog;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class AdminAddNewCategoryActivity extends AppCompatActivity {
-    private String categoryName, pName, pDescription, pAuthor, pPrice, CurrentData, CurrentTime, randomKey;
+    private String categoryName, pName, pDescription, pAuthor, pPrice, saveCurrentDate, saveCurrentTime, productRandomKey;
     private ImageView productImage;
     private EditText productTitle, productAuthor, productDescription, productPrice;
     private Button addProduct;
     private static final int GALLERYPICK = 1;
-    private Uri imageUri;
+    private Uri ImageUri;
     private String downloadImageUrl;
-    private StorageReference productImageRef;
+    private StorageReference ProductImageRef;
     private DatabaseReference productRef;
     private ProgressDialog progressBar;
+    private TextView textViewforException;
 
 
     @Override
@@ -62,9 +65,9 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
             return insets;
         });
 
-
-        init();
-
+        {
+            init();
+        }
         productImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,7 +89,7 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
         pDescription = productDescription.getText().toString();
         pPrice = productPrice.getText().toString();
 
-        if (imageUri == null) {
+        if (ImageUri == null) {
             Toast.makeText(this, "Изображение не выбрано", Toast.LENGTH_SHORT).show();
 
         } else if (TextUtils.isEmpty(pName)) {
@@ -109,36 +112,32 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
         progressBar.show();
 
         Toast.makeText(this, "Сохранение товара", Toast.LENGTH_SHORT).show();
-        Calendar calendar = Calendar.getInstance();
 
-        SimpleDateFormat currentDate = new SimpleDateFormat("ddMMyyyy");
-        CurrentData = currentDate.format(calendar.getTime());
+        productRandomKey = pAuthor + pName;
+        final StorageReference filePath = ProductImageRef.child(productRandomKey + ".jpg");
+        final UploadTask uploadTask = filePath.putFile(ImageUri);
 
-        SimpleDateFormat currentTime = new SimpleDateFormat("HHmmss");
-        CurrentTime = currentTime.format(calendar.getTime());
-        randomKey = CurrentData + CurrentTime;
-
-        StorageReference filePath = productImageRef.child(imageUri.getLastPathSegment() + randomKey + ".jpg");
-
-        final UploadTask uploadTask = filePath.putFile(imageUri);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                String err = e.toString();
-                Toast.makeText(AdminAddNewCategoryActivity.this, err, Toast.LENGTH_SHORT).show();
+                String message = e.toString();
+                Toast.makeText(AdminAddNewCategoryActivity.this, "Ошибище: " + message, Toast.LENGTH_SHORT).show();
+                Log.e("Firebase Failure", "Ошибка загрузки файла: " + e.getMessage());
+                String textForTest = pAuthor + pName + "\n" + e.toString() + "\n" + filePath + "\n" + ImageUri + "\n" + ProductImageRef;
+                textViewforException.setText(textForTest);
                 progressBar.dismiss();
-
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(AdminAddNewCategoryActivity.this, "Успешно", Toast.LENGTH_SHORT).show();
-                Task<Uri> uriTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                Toast.makeText(AdminAddNewCategoryActivity.this, "Изображение успешно загружено.", Toast.LENGTH_SHORT).show();
+
+                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                         if (!task.isSuccessful()) {
-                            task.getException();
+                            throw Objects.requireNonNull(task.getException());
                         }
                         downloadImageUrl = filePath.getDownloadUrl().toString();
                         return filePath.getDownloadUrl();
@@ -147,21 +146,24 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(AdminAddNewCategoryActivity.this, "Успешно", Toast.LENGTH_SHORT).show();
+                            downloadImageUrl = task.getResult().toString();
+
+                            Toast.makeText(AdminAddNewCategoryActivity.this, "Фото сохранено", Toast.LENGTH_SHORT).show();
+                            String textmessgefortest = filePath.toString();
+                            textViewforException.setText(textmessgefortest);
                             SaveProductInfoToDatabase();
                         }
                     }
                 });
             }
         });
-
     }
 
     private void SaveProductInfoToDatabase() {
         HashMap<String, Object> productMap = new HashMap<>();
-        productMap.put("pid", randomKey);
-        productMap.put("date", CurrentData);
-        productMap.put("time", CurrentTime);
+        productMap.put("pid", productRandomKey);
+        productMap.put("date", saveCurrentDate);
+        productMap.put("time", saveCurrentTime);
         productMap.put("description", pDescription);
         productMap.put("image", downloadImageUrl);
         productMap.put("author", pAuthor);
@@ -169,7 +171,7 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
         productMap.put("title", pName);
         productMap.put("category", categoryName);
 
-        productRef.child(randomKey).updateChildren(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        productRef.child(productRandomKey).setValue(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -178,7 +180,7 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
                     Intent intent = new Intent(AdminAddNewCategoryActivity.this, AdminCategoryActiviti.class);
                     startActivity(intent);
                 } else {
-                    String err = task.getException().toString();
+                    String err = Objects.requireNonNull(task.getException()).toString();
                     Toast.makeText(AdminAddNewCategoryActivity.this, err, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -195,24 +197,27 @@ public class AdminAddNewCategoryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GALLERYPICK && resultCode == RESULT_OK && data != null) {
-            imageUri = data.getData();
-            productImage.setImageURI(imageUri);
+        if (requestCode == GALLERYPICK && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            ImageUri = data.getData();
+            productImage.setImageURI(ImageUri);
 
         }
-
     }
 
     private void init() {
-        categoryName = getIntent().getExtras().get("Category").toString();
+        categoryName = Objects.requireNonNull(Objects.requireNonNull(getIntent().getExtras()).get("Category")).toString();
         productImage = findViewById(R.id.cameraLogo);
         productTitle = findViewById(R.id.nameBook);
         productAuthor = findViewById(R.id.nameAwtor);
         productDescription = findViewById(R.id.nameOpisaniye);
         productPrice = findViewById(R.id.cost);
         addProduct = findViewById(R.id.btnAdd);
+        //
+        textViewforException = findViewById(R.id.textViewforException);
+        //
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         productRef = FirebaseDatabase.getInstance().getReference().child("Products");
-        productImageRef = FirebaseStorage.getInstance().getReference().child("Product Images");
-
+//        ProductImageRef = storageRef.child("Product_Image/");
+        progressBar = new ProgressDialog(this);
     }
 }
