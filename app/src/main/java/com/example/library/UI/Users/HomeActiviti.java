@@ -13,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.library.R;
 
+import io.paperdb.Paper;
+
 public class HomeActiviti extends AppCompatActivity {
     private Button logoutBtn;
     private String userName;
@@ -30,6 +32,8 @@ public class HomeActiviti extends AppCompatActivity {
 
         logoutBtn = findViewById(R.id.logoutBtn);
         logoutBtn.setOnClickListener(v -> {
+            Paper.init(this);
+            Paper.book().destroy();
             Intent logoutIntent = new Intent(HomeActiviti.this, MainActivity.class);
             startActivity(logoutIntent);
         });

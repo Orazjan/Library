@@ -33,16 +33,17 @@ public class AdminCategoryActiviti extends AppCompatActivity {
         Category_Fantasy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Fantasy");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Fantasy");
                 startActivity(intent);
+
             }
         });
         Category_Detektiw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Detektiw");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Detektiw");
                 startActivity(intent);
 
             }
@@ -50,8 +51,8 @@ public class AdminCategoryActiviti extends AppCompatActivity {
         Category_Drama.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Drama");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Drama");
                 startActivity(intent);
 
             }
@@ -59,16 +60,16 @@ public class AdminCategoryActiviti extends AppCompatActivity {
         Category_Komiksy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Komiksy");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Komiksy");
                 startActivity(intent);
             }
         });
         Category_Poeziya.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Poeziya");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Poeziya");
                 startActivity(intent);
 
             }
@@ -76,48 +77,48 @@ public class AdminCategoryActiviti extends AppCompatActivity {
         Category_LoveRoman.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "LoveRoman");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "LoveRoman");
                 startActivity(intent);
             }
         });
         Category_Priklucheniye.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Priklucheniye");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Priklucheniye");
                 startActivity(intent);
             }
         });
         Category_Psy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Psy");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Psy");
                 startActivity(intent);
             }
         });
         Category_Proza.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Proza");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Proza");
                 startActivity(intent);
             }
         });
         Category_Trillery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Trillery");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Trillery");
                 startActivity(intent);
             }
         });
         Category_Ujasy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActivity.class);
-                intent.putExtra("Category", "Ujasy");
+                Intent intent = new Intent(AdminCategoryActiviti.this, AdminAddNewCategoryActiviti.class);
+                intent.putExtra("category", "Ujasy");
                 startActivity(intent);
             }
         });

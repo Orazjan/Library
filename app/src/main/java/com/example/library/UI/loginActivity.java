@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,8 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.library.R;
 import com.example.library.UI.Admin.AdminCategoryActiviti;
-import com.example.library.Model.Users;
 import com.example.library.UI.Users.HomeActiviti;
+import com.example.library.Model.Users;
+import com.example.library.Prevalent.Prevalent;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +33,7 @@ public class loginActivity extends AppCompatActivity {
     private ProgressDialog loadingBar;
     private TextView adminLink, notAdminLink;
     private String parentDbName = "Users";
+    private CheckBox login_checkbox;
 
 
     @Override
@@ -44,6 +47,8 @@ public class loginActivity extends AppCompatActivity {
         adminLink = findViewById(R.id.adminLink);
         notAdminLink = findViewById(R.id.notAdminLink);
         loadingBar = new ProgressDialog(this);
+        login_checkbox = findViewById(R.id.login_checkbox);
+
         Paper.init(this);
 
         loginBtn.setOnClickListener(v -> loginUser());
@@ -81,6 +86,12 @@ public class loginActivity extends AppCompatActivity {
     }
 
     private void ValidateUser(final String phone, final String password) {
+
+        if (login_checkbox.isChecked()) {
+            Paper.book().write(Prevalent.UserPhoneKey, phone);
+            Paper.book().write(Prevalent.UserPassword, password);
+        }
+
 
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();

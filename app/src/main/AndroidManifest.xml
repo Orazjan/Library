@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Library"
         tools:targetApi="31">
         <activity
-            android:name=".UI.Admin.AdminAddNewCategoryActivity"
+            android:name=".UI.Admin.AdminAddNewCategoryActiviti"
             android:exported="false" />
         <activity
             android:name=".UI.Admin.AdminCategoryActiviti"
