@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(parentDbName).child(phone).exists()) {
                     String userName = dataSnapshot.child(parentDbName).child(phone).child("name").getValue(String.class);
+                    String userFam = dataSnapshot.child(parentDbName).child(phone).child("fam").getValue(String.class);
                     Users usersData = dataSnapshot.child(parentDbName).child(phone).getValue(Users.class);
                     assert usersData != null;
 
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
 
                                 homeIntent.putExtra("userName", userName.toString());
+                                homeIntent.putExtra("userFam", userFam.toString());;
                                 startActivity(homeIntent);
                             }
 

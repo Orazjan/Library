@@ -32,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +71,8 @@ public class HomeActivity extends AppCompatActivity {
                 if (id == R.id.nav_cart) {
 
                 } else if (id == R.id.nav_settings) {
-                    Intent loginIntent = new Intent(HomeActivity.this, SettingsActivity.class);
-                    startActivity(loginIntent);
+                    Intent settingIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+                    startActivity(settingIntent);
 
                 } else if (id == R.id.nav_logout) {
                     Paper.book().destroy();
@@ -91,6 +92,9 @@ public class HomeActivity extends AppCompatActivity {
 
         View headerView = navigationView.getHeaderView(0);
         TextView userNameTextView = headerView.findViewById(R.id.user_profile_name);
+        String userName = getIntent().getStringExtra("userName");
+        String userFam = getIntent().getStringExtra("userFam");
+        userNameTextView.setText(userName + " " + userFam);
         CircleImageView profileImageView = headerView.findViewById(R.id.user_profile_image);
 
     }
