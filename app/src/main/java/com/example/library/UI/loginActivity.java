@@ -16,9 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.library.R;
 import com.example.library.UI.Admin.AdminCategoryActiviti;
-import com.example.library.UI.Users.HomeActiviti;
 import com.example.library.Model.Users;
 import com.example.library.Prevalent.Prevalent;
+import com.example.library.UI.Users.HomeActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -115,7 +115,7 @@ public class loginActivity extends AppCompatActivity {
                             } else if (parentDbName.equals("Users")) {
                                 loadingBar.dismiss();
                                 Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-                                Intent homeIntent = new Intent(loginActivity.this, HomeActiviti.class);
+                                Intent homeIntent = new Intent(loginActivity.this, HomeActivity.class);
 
                                 homeIntent.putExtra("userName", userName.toString());
                                 startActivity(homeIntent);

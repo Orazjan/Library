@@ -13,13 +13,18 @@
         android:theme="@style/Theme.Library"
         tools:targetApi="31">
         <activity
+            android:name=".UI.Users.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UI.Users.HomeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_home"
+            android:theme="@style/Theme.Library.NoActionBar" />
+        <activity
             android:name=".UI.Admin.AdminAddNewCategoryActiviti"
             android:exported="false" />
         <activity
             android:name=".UI.Admin.AdminCategoryActiviti"
-            android:exported="false" />
-        <activity
-            android:name=".UI.Users.HomeActiviti"
             android:exported="false" />
         <activity
             android:name=".UI.regActivity"

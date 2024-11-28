@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                             } else if (parentDbName.equals("Users")) {
                                 loadingBar.dismiss();
                                 Toast.makeText(MainActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-                                Intent homeIntent = new Intent(MainActivity.this, HomeActiviti.class);
+                                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
 
                                 homeIntent.putExtra("userName", userName.toString());
                                 startActivity(homeIntent);
