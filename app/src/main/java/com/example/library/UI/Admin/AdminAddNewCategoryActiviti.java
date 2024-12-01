@@ -138,9 +138,9 @@ public class AdminAddNewCategoryActiviti extends AppCompatActivity {
 
         productRandomKey = saveCurrentDate + saveCurrentTime;
 
-        final StorageReference filePath = ProductImageRef.child(ImageUri.getLastPathSegment() + productRandomKey + ".jpg");
+        StorageReference filePath = ProductImageRef.child(ImageUri.getLastPathSegment() + productRandomKey + ".jpg");
 
-        final UploadTask uploadTask = filePath.putFile(ImageUri);
+        UploadTask uploadTask = filePath.putFile(ImageUri);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -148,6 +148,12 @@ public class AdminAddNewCategoryActiviti extends AppCompatActivity {
                 String message = e.toString();
                 Toast.makeText(AdminAddNewCategoryActiviti.this, "Ошибка: " + message, Toast.LENGTH_SHORT).show();
                 Log.e("Firebase", "Error uploading image: " + message);
+                Log.e("CHECK ERROR", "FILEPATH " + filePath);
+                Log.e("CHECK ERROR", "UPLOADTASK " + uploadTask);
+                Log.e("CHECK ERROR", "IMAGEURI " + productImage);
+                Log.e("CHECK ERROR", "downloadImageUrl " + downloadImageUrl);
+                Log.e("CHECK ERROR", "ProductImageRef " + ProductImageRef);
+                Log.e("CHECK ERROR", "ImageUri.getLastPathSegment() " + ImageUri.getLastPathSegment());
                 loadingBar.dismiss();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

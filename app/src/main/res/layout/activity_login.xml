@@ -32,26 +32,24 @@
         android:textStyle="italic|bold" />
 
     <EditText
-        android:id="@+id/login_number"
+        android:id="@+id/login_phone"
         android:layout_width="800sp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginLeft="25sp"
         android:layout_marginTop="20sp"
         android:layout_marginRight="25sp"
-        android:autofillHints="phone"
         android:background="@drawable/input_design"
-        android:hint="@string/phone_number"
-        android:inputType="text|numberPassword"
+        android:hint="@string/enter_email"
+        android:inputType="textEmailAddress"
         android:padding="20sp"
-        android:text="+996"
-        android:textColor="@color/forText" />
+        android:textColor="@color/black" />
 
     <EditText
         android:id="@+id/login_password"
         android:layout_width="800sp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/login_number"
+        android:layout_below="@id/login_phone"
         android:layout_centerInParent="true"
         android:layout_marginLeft="25sp"
         android:layout_marginTop="20sp"
@@ -61,14 +59,15 @@
         android:hint="@string/enter_password"
         android:inputType="textPassword"
         android:padding="20sp"
-        android:textColor="@color/forText" />
+        android:textColor="@color/black" />
 
     <LinearLayout
         android:id="@+id/linear_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="370sp"
         android:layout_height="wrap_content"
         android:layout_below="@id/login_password"
-        android:layout_centerHorizontal="true"
+        android:layout_marginStart="15sp"
+
         android:orientation="horizontal">
 
 
@@ -76,19 +75,22 @@
             android:id="@+id/login_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5sp"
-            android:gravity="center_vertical"
-            android:text="@string/believe_me"
-            android:textColor="@color/forText"
+            android:gravity="center_vertical|left" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-10dp"
+
+            android:hint="@string/believe_me"
             android:textSize="17sp" />
 
         <TextView
             android:id="@+id/forget_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="45sp"
-            android:text="@string/forget_password"
-            android:textColor="@color/forText"
+            android:layout_marginStart="60sp"
+            android:hint="@string/forget_password"
             android:textSize="17sp" />
     </LinearLayout>
 
@@ -134,7 +136,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="45sp"
-            android:text="Панель админа"
+            android:hint="Панель админа"
             android:textColor="@color/forText"
             android:textSize="17sp" />
 

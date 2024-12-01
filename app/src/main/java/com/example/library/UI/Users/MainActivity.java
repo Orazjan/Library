@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.library.Model.Users;
 import com.example.library.Prevalent.Prevalent;
 import com.example.library.R;
-import com.example.library.UI.Admin.AdminCategoryActiviti;
 import com.example.library.UI.loginActivity;
 import com.example.library.UI.regActivity;
 import com.google.firebase.database.DataSnapshot;
@@ -50,12 +49,14 @@ public class MainActivity extends AppCompatActivity {
         });
         regBtn = (Button) findViewById(R.id.regBtn);
         logBtn = (Button) findViewById(R.id.logbtn);
-        homeBtn = findViewById(R.id.glawBtn);
         loadingBar = new ProgressDialog(this);
+
+
         logBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent loginintent = new Intent(MainActivity.this, loginActivity.class);
+                loadingBar.dismiss();
                 startActivity(loginintent);
 
             }
@@ -64,64 +65,47 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent regintent = new Intent(MainActivity.this, regActivity.class);
+                loadingBar.dismiss();
                 startActivity(regintent);
-            }
-        });
-        homeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent homeintent = new Intent(MainActivity.this, AdminCategoryActiviti.class);
-                startActivity(homeintent);
             }
         });
         Paper.init(this);
 
-        String userPhoneKey = Paper.book().read(Prevalent.UserPhoneKey);
+        String UserPhoneKey = Paper.book().read(Prevalent.UserPhoneKey);
         String userPasswordKey = Paper.book().read(Prevalent.UserPassword);
 
-        if (userPhoneKey != "" && userPasswordKey != "") {
-            if (!TextUtils.isEmpty(userPhoneKey) && !TextUtils.isEmpty(userPasswordKey)) {
-                ValidateUser(userPhoneKey, userPasswordKey);
+        if (UserPhoneKey != "" && userPasswordKey != "") {
+            if (!TextUtils.isEmpty(UserPhoneKey) && !TextUtils.isEmpty(userPasswordKey)) {
+                ValidateUser(UserPhoneKey, userPasswordKey);
+
+                loadingBar.setTitle("Вход в приложение");
+                loadingBar.setMessage("Пожалуйста, подождите...");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
             }
         }
-
-
     }
 
     private void ValidateUser(String phone, String password) {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
-        String parentDbName = "Users";
+
         RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(parentDbName).child(phone).exists()) {
-                    String userName = dataSnapshot.child(parentDbName).child(phone).child("name").getValue(String.class);
-                    String userFam = dataSnapshot.child(parentDbName).child(phone).child("fam").getValue(String.class);
-                    Users usersData = dataSnapshot.child(parentDbName).child(phone).getValue(Users.class);
-                    assert usersData != null;
+                if (dataSnapshot.child("Users").child(phone).exists()) {
+                    Users usersData = dataSnapshot.child("Users").child(phone).getValue(Users.class);
 
                     if (usersData.getPhone().equals(phone)) {
                         if (usersData.getPassword().equals(password)) {
-                            if (parentDbName.equals("Admins")) {
-                                loadingBar.dismiss();
-                                Toast.makeText(MainActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+                            Toast.makeText(MainActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
 
-                                Intent adminIntent = new Intent(MainActivity.this, AdminCategoryActiviti.class);
-                                startActivity(adminIntent);
-                            } else if (parentDbName.equals("Users")) {
-                                loadingBar.dismiss();
-                                Toast.makeText(MainActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-                                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-
-                                homeIntent.putExtra("userName", userName.toString());
-                                homeIntent.putExtra("userFam", userFam.toString());;
-                                startActivity(homeIntent);
-                            }
-
+                            Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                            Prevalent.currentOnlineUser = usersData;
+                            startActivity(homeIntent);
                         } else {
                             loadingBar.dismiss();
-                            Toast.makeText(MainActivity.this, "Неверный пароль", Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
