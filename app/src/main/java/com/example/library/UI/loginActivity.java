@@ -16,139 +16,87 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.library.Model.Users;
-import com.example.library.R;
 import com.example.library.Prevalent.Prevalent;
-import com.example.library.UI.Admin.AdminCategoryActiviti;
+import com.example.library.R;
 import com.example.library.UI.Users.HomeActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Arrays;
 
 import io.paperdb.Paper;
 
 public class loginActivity extends AppCompatActivity {
     private Button loginBtn;
-    private EditText phoneInput, passwordInput;
+    private FirebaseAuth auth;
+    private EditText loginEmail, loginPassword;
     private ProgressDialog loadingBar;
-    private TextView adminLink, notAdminLink;
-    private String parentDbName = "Users";
     private CheckBox login_checkbox;
+    private TextView forgetPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        auth = FirebaseAuth.getInstance();
 
+        forgetPassword = findViewById(R.id.forgetPassword);
         loginBtn = findViewById(R.id.loginBtn);
-        phoneInput = findViewById(R.id.login_phone);
-        passwordInput = findViewById(R.id.login_password);
-        adminLink = findViewById(R.id.adminLink);
-        notAdminLink = findViewById(R.id.notAdminLink);
-        loadingBar = new ProgressDialog(this);
+        loginEmail = findViewById(R.id.loginEmail);
+        loginPassword = findViewById(R.id.loginPassword);
         login_checkbox = findViewById(R.id.login_checkbox);
+        loadingBar = new ProgressDialog(this);
 
         Paper.init(this);
 
         loginBtn.setOnClickListener(v -> loginUser());
-
-        adminLink.setOnClickListener(view -> {
-            adminLink.setVisibility(View.INVISIBLE);
-            notAdminLink.setVisibility(View.VISIBLE);
-            loginBtn.setText("Вход в панель администратора");
-            parentDbName = "Admins";
-        });
-        notAdminLink.setOnClickListener(view -> {
-            adminLink.setVisibility(View.VISIBLE);
-            notAdminLink.setVisibility(View.INVISIBLE);
-            loginBtn.setText("Начать");
-            parentDbName = "Users";
+        forgetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(loginActivity.this, ResetPasswordActivity.class));
+            }
         });
     }
 
     private void loginUser() {
-        String phone = phoneInput.getText().toString();
-        String password = passwordInput.getText().toString();
-
-        if (TextUtils.isEmpty(phone)) {
-            Toast.makeText(this, "Введите номер", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Введите пароль", Toast.LENGTH_SHORT).show();
-        } else {
-            loadingBar.setTitle("Вход в приложение");
-            loadingBar.setMessage("Пожалуйста, подождите...");
-            loadingBar.setCanceledOnTouchOutside(false);
-            loadingBar.show();
-
-            ValidateUser(phone, password);
-        }
-    }
-
-    private void ValidateUser(final String phone, final String password) {
-
+        String email = loginEmail.getText().toString();
+        String password = loginPassword.getText().toString();
+        loadingBar.setTitle("Вход в приложение");
+        loadingBar.setMessage("Пожалуйста, подождите...");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
         if (login_checkbox.isChecked()) {
-            Paper.book().write(Prevalent.UserPhoneKey, phone);
+            Paper.book().write(Prevalent.UserEmailKey, email);
             Paper.book().write(Prevalent.UserPassword, password);
         }
 
-
-        final DatabaseReference RootRef;
-        RootRef = FirebaseDatabase.getInstance().getReference();
-
-        RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(parentDbName).child(phone).exists()) {
-                    String userName = dataSnapshot.child(parentDbName).child(phone).child("name").getValue(String.class);
-                    Users usersData = dataSnapshot.child(parentDbName).child(phone).getValue(Users.class);
-                    assert usersData != null;
-
-                    if (usersData.getPhone().equals(phone)) {
-                        if (usersData.getPassword().equals(password)) {
-                            if (parentDbName.equals("Admins")) {
-                                loadingBar.dismiss();
-                                Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-
-                                Intent adminIntent = new Intent(loginActivity.this, AdminCategoryActiviti.class);
-                                startActivity(adminIntent);
-                            } else if (parentDbName.equals("Users")) {
-                                loadingBar.dismiss();
-                                Toast.makeText(loginActivity.this, "Успешный вход!", Toast.LENGTH_SHORT).show();
-                                Intent homeIntent = new Intent(loginActivity.this, HomeActivity.class);
-
-                                homeIntent.putExtra("userName", userName.toString());
-                                startActivity(homeIntent);
-                            }
-
-                        } else {
-                            loadingBar.dismiss();
-                            Toast.makeText(loginActivity.this, "Неверный пароль", Toast.LENGTH_SHORT).show();
-                        }
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "Введите номер", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(password)) {
+            Toast.makeText(this, "Введите пароль", Toast.LENGTH_SHORT).show();
+        } else if (password.length() < 6) {
+            Toast.makeText(this, "Пароль должен быть больше 6 символов", Toast.LENGTH_SHORT).show();
+        } else {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(loginActivity.this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(loginActivity.this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show();
+                        loadingBar.dismiss();
+                        startActivity(new Intent(loginActivity.this, HomeActivity.class));
+                    } else {
+                        Toast.makeText(loginActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
+                        loadingBar.dismiss();
                     }
-                } else {
-                    loadingBar.dismiss();
-                    Toast.makeText(loginActivity.this, "Аккаунт с номером " + phone + "не существует", Toast.LENGTH_SHORT).show();
-
-                    Intent registerIntent = new Intent(loginActivity.this, regActivity.class);
-                    startActivity(registerIntent);
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("On Login", "onComplete: " + e.getMessage());
+                }
+            });
+        }
     }
-
 }
 

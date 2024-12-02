@@ -14,6 +14,11 @@ import com.example.library.UI.loginActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -30,6 +35,7 @@ import io.paperdb.Paper;
 public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private TextView user_profile_name;
 
 
     @SuppressLint("SetTextI18n")
@@ -89,13 +95,11 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
         View headerView = navigationView.getHeaderView(0);
         TextView userNameTextView = headerView.findViewById(R.id.user_profile_name);
-        String userName = getIntent().getStringExtra("userName");
-        String userFam = getIntent().getStringExtra("userFam");
-        userNameTextView.setText(userName + " " + userFam);
+        user_profile_name = findViewById(R.id.user_profile_name);
         CircleImageView profileImageView = headerView.findViewById(R.id.user_profile_image);
+
 
     }
 

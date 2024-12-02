@@ -23,24 +23,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
+                <Button
                     android:id="@+id/close_settings_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:text="Закрыть"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/black"
                     android:textSize="17sp"
+
                     android:textStyle="bold|italic" />
 
-                <TextView
+                <Button
                     android:id="@+id/save_settings_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_marginRight="15dp"
                     android:text="Сохранить"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/black"
                     android:textSize="17sp"
                     android:textStyle="bold|italic" />
 
@@ -49,7 +50,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/settings_account_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -68,5 +69,13 @@
         android:layout_marginRight="30dp"
         android:background="@drawable/input_design"
         android:hint="Ваш адрес"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:textColor="@color/black" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_address"
+        android:layout_marginTop="20sp" />
 </RelativeLayout>

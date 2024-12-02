@@ -56,6 +56,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation (libs.paperdb)
     implementation (libs.circleimageview)
+    implementation (libs.glide)
+
 
 
 
