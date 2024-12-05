@@ -1,9 +1,9 @@
 package com.example.library.UI.Users;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -17,17 +17,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.util.UUID;
 
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-
 import androidx.activity.EdgeToEdge;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,7 +30,7 @@ import com.example.library.R;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 71;
-    private Button closeSettingsTv;
+    private Button saveSettingsTv, closeSettingsTv;
     private StorageReference storageReference;
 
     @Override
@@ -53,10 +45,17 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
 
-        Button saveSettingsTv = findViewById(R.id.save_settings_tv);
+        saveSettingsTv = findViewById(R.id.save_settings_tv);
+        closeSettingsTv = findViewById(R.id.close_settings_tv);
 
         storageReference = FirebaseStorage.getInstance().getReference();
-
+        closeSettingsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
+                finish();
+            }
+        });
         saveSettingsTv.setOnClickListener(view ->
 
         {

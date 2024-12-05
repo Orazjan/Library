@@ -53,12 +53,8 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     implementation(libs.paperdb)
     androidTestImplementation(libs.espresso.core)
-    implementation(platform(libs.firebase.bom))
-    implementation (libs.paperdb)
-    implementation (libs.circleimageview)
-    implementation (libs.glide)
-
-
+    implementation(libs.circleimageview)
+    implementation(libs.glide)
 
 
 }
