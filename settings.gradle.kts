@@ -10,6 +10,7 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
 
+
     }
 }
 dependencyResolutionManagement {
@@ -19,5 +20,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 rootProject.name = "library"
 include(":app")

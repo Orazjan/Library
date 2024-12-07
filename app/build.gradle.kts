@@ -49,12 +49,11 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     implementation(libs.paperdb)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.circleimageview)
     implementation(libs.glide)
-
-
 }

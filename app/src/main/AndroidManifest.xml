@@ -15,10 +15,7 @@
         android:theme="@style/Theme.Library"
         tools:targetApi="31">
         <activity
-            android:name=".UI.ResetPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".UI.Users.SettingsActivity"
+            android:name=".UI.Users.MainMenuActivity"
             android:exported="false" />
         <activity
             android:name=".UI.Users.HomeActivity"
@@ -26,10 +23,10 @@
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.Library.NoActionBar" />
         <activity
-            android:name=".UI.Admin.AdminAddNewCategoryActiviti"
+            android:name=".UI.ResetPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.Admin.AdminCategoryActiviti"
+            android:name=".UI.Users.SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".UI.regActivity"
