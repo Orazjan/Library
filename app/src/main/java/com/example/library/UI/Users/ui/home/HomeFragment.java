@@ -7,18 +7,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.library.Model.Books;
 import com.example.library.Model.CategoryModel;
 import com.example.library.R;
 import com.example.library.UI.Adapters.CategoryAdapter;
-import com.example.library.databinding.FragmentHomeBinding;
+import com.example.library.UI.Adapters.NewBooksAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -31,49 +30,74 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
     CategoryAdapter categoryAdapter;
+    NewBooksAdapter newBooksAdapter;
     List<CategoryModel> categoryModelList;
-    private RecyclerView catRecycleView;
+    List<Books> BooksList;
+    private RecyclerView catRecycleView, newBooksRec;
 
     FirebaseFirestore db;
 
     public HomeFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        // Inflate the layout for this fragment
 
         catRecycleView = root.findViewById(R.id.rec_category);
+        newBooksRec = root.findViewById(R.id.new_product_rec);
+
         db = FirebaseFirestore.getInstance();
-        catRecycleView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+        catRecycleView.setLayoutManager(gridLayoutManager);
+
         categoryModelList = new ArrayList<>();
         categoryAdapter = new CategoryAdapter(getContext(), categoryModelList);
         catRecycleView.setAdapter(categoryAdapter);
-
-        db.collection("Category_name")
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()) {
-                            for(QueryDocumentSnapshot docment : task.getResult()) {
-                                CategoryModel categoryModel = docment.toObject(CategoryModel.class);
-                                categoryModelList.add(categoryModel);
-                                categoryAdapter.notifyDataSetChanged();
-                            }
-                        }
+        db.collection("Category_name").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        CategoryModel categoryModel = document.toObject(CategoryModel.class);
+                        categoryModelList.add(categoryModel);
+                        categoryAdapter.notifyDataSetChanged();
                     }
+                }
+            }
 
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error getting documents.", e);
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Error getting documents.", e);
+            }
+        });
+        // Новые книги
+        GridLayoutManager gridLayoutManager2 = new GridLayoutManager(getActivity(), 2);
+        newBooksRec.setLayoutManager(gridLayoutManager2);
+        BooksList = new ArrayList<>();
+        newBooksAdapter = new NewBooksAdapter(getContext(), BooksList);
+        newBooksRec.setAdapter(newBooksAdapter);
+        db.collection("new_books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Books books = document.toObject(Books.class);
+                        BooksList.add(books);
+                        newBooksAdapter.notifyDataSetChanged();
                     }
-                });
+                }
+            }
 
-
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Error getting documents.", e);
+            }
+        });
         return root;
     }
 }

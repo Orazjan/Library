@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
 import com.example.library.R;
 import com.example.library.UI.Users.ui.home.HomeFragment;
@@ -32,6 +33,7 @@ public class HomeActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
     Fragment homeFragment;
+    TextView Category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +44,13 @@ public class HomeActivity extends AppCompatActivity {
 
         homeFragment = new HomeFragment();
         loadFragment(homeFragment);
-
+        Category = findViewById(R.id.Category);
+        Category.setText("Категории");
         setSupportActionBar(binding.appBarHome.toolbar);
         binding.appBarHome.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Здесь должен быть переход в корзину", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .setAnchorView(R.id.fab).show();
             }
@@ -73,10 +76,6 @@ public class HomeActivity extends AppCompatActivity {
                     startActivity(settingIntent);
 
                 } else if (id == R.id.nav_logout) {
-                    Paper.book().destroy();
-                    Intent loginIntent = new Intent(HomeActivity.this, loginActivity.class);
-                    startActivity(loginIntent);
-                } else if (id == R.id.nav_likeAdmin) {
                     Paper.book().destroy();
                     Intent loginIntent = new Intent(HomeActivity.this, loginActivity.class);
                     startActivity(loginIntent);

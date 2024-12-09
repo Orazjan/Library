@@ -20,10 +20,5 @@
             android:icon="@drawable/logout"
             android:iconTint="@color/white"
             android:title="Выход" />
-        <item
-            android:id="@+id/nav_likeAdmin"
-            android:icon="@drawable/administrator"
-            android:iconTint="@color/white"
-            android:title="Войти как администратор" />
     </group>
 </menu>

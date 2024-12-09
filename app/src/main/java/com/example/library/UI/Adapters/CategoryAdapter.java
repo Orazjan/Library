@@ -39,10 +39,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if (list.size() > 2) {
+            return list.size() - 5;
+        } else {
+            return list.size();
+        }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView Category_image;
         TextView Category_name;
 
