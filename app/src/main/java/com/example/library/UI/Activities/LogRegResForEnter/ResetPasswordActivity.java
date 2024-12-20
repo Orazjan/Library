@@ -1,4 +1,4 @@
-package com.example.library.UI;
+package com.example.library.UI.Activities.LogRegResForEnter;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static android.widget.Toast.makeText;

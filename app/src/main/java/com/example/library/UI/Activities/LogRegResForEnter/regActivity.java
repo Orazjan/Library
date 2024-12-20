@@ -1,4 +1,4 @@
-package com.example.library.UI;
+package com.example.library.UI.Activities.LogRegResForEnter;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -56,10 +56,11 @@ public class regActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(useremail) || TextUtils.isEmpty(userpassword)) {
             Toast.makeText(this, "Поле не заполнено!", Toast.LENGTH_SHORT).show();
-            return;
+
         } else if (userpassword.length() < 6) {
             Toast.makeText(this, "Пароль должен быть больше 6 символов", Toast.LENGTH_SHORT).show();
-            return;
+        } else if (useremail.equals("qwerty")) {
+            Toast.makeText(this, "Выберите более надёжный пароль", Toast.LENGTH_SHORT).show();
         } else {
             progressBar.setTitle("Создание аккаунта");
             progressBar.setMessage("Пожалуйста подождите...");

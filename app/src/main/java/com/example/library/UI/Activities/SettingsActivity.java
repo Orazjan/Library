@@ -1,4 +1,4 @@
-package com.example.library.UI.Users;
+package com.example.library.UI.Activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "Ошибка загрузки:    " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Ошибка загрузки: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }

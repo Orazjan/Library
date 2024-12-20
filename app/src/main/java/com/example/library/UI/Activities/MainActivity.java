@@ -1,4 +1,4 @@
-package com.example.library.UI.Users;
+package com.example.library.UI.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -18,13 +18,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.library.Prevalent.Prevalent;
 import com.example.library.R;
-import com.example.library.UI.loginActivity;
-import com.example.library.UI.regActivity;
+import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
+import com.example.library.UI.Activities.LogRegResForEnter.regActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 import io.paperdb.Paper;
 
@@ -32,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private Button regBtn, logBtn, homeBtn;
     private ProgressDialog loadingBar;
-
 
 
     @Override
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         regBtn = (Button) findViewById(R.id.regBtn);
         logBtn = (Button) findViewById(R.id.logbtn);
         loadingBar = new ProgressDialog(this);
-
 
 
         logBtn.setOnClickListener(new View.OnClickListener() {
@@ -71,8 +71,12 @@ public class MainActivity extends AppCompatActivity {
 
         String UserEmailKey = Paper.book().read(Prevalent.UserEmailKey);
         String userPasswordKey = Paper.book().read(Prevalent.UserPassword);
+        loadingBar.setTitle("Вход в приложение");
+        loadingBar.setMessage("Пожалуйста, подождите...");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
 
-        if (UserEmailKey != "" && userPasswordKey != "") {
+        if (!Objects.equals(UserEmailKey, "") && !Objects.equals(userPasswordKey, "")) {
             if (!TextUtils.isEmpty(UserEmailKey) && !TextUtils.isEmpty(userPasswordKey)) {
                 auth.signInWithEmailAndPassword(UserEmailKey, userPasswordKey).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override

@@ -1,4 +1,4 @@
-package com.example.library.UI.Users;
+package com.example.library.UI.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,8 +8,8 @@ import android.view.Menu;
 import android.widget.TextView;
 
 import com.example.library.R;
-import com.example.library.UI.Users.ui.home.HomeFragment;
-import com.example.library.UI.loginActivity;
+import com.example.library.UI.Activities.ui.home.HomeFragment;
+import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 

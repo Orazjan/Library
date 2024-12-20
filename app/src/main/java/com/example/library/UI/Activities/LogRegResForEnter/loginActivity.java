@@ -1,4 +1,4 @@
-package com.example.library.UI;
+package com.example.library.UI.Activities.LogRegResForEnter;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.library.Prevalent.Prevalent;
 import com.example.library.R;
-import com.example.library.UI.Users.HomeActivity;
+import com.example.library.UI.Activities.HomeActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -62,7 +62,7 @@ public class loginActivity extends AppCompatActivity {
         String email = loginEmail.getText().toString();
         String password = loginPassword.getText().toString();
         loadingBar.setTitle("Вход в приложение");
-        loadingBar.setMessage("Пожалуйста, подождите...");
+        loadingBar.setMessage("Пожажалуйста, подождите...");
         loadingBar.setCanceledOnTouchOutside(false);
         loadingBar.show();
         if (login_checkbox.isChecked()) {
@@ -76,22 +76,29 @@ public class loginActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите пароль", Toast.LENGTH_SHORT).show();
         } else if (password.length() < 6) {
             Toast.makeText(this, "Пароль должен быть больше 6 символов", Toast.LENGTH_SHORT).show();
+        } else if (email.equals("qwerty")) {
+            Toast.makeText(this, "Выберите более надёжный пароль", Toast.LENGTH_SHORT).show();
+            loginEmail.setText("");
         } else {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(loginActivity.this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(loginActivity.this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show();
                         loadingBar.dismiss();
+                        Toast.makeText(loginActivity.this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(loginActivity.this, HomeActivity.class));
                     } else {
-                        Toast.makeText(loginActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
                         loadingBar.dismiss();
+                        Toast.makeText(loginActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(loginActivity.this, HomeActivity.class));
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(loginActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
+                    loadingBar.dismiss();
+
                     Log.d("On Login", "onComplete: " + e.getMessage());
                 }
             });

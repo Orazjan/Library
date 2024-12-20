@@ -1,4 +1,4 @@
-package com.example.library.UI.Users.ui.home;
+package com.example.library.UI.Activities.ui.home;
 
 import static android.content.ContentValues.TAG;
 
@@ -13,11 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.library.Model.Books;
 import com.example.library.Model.CategoryModel;
 import com.example.library.R;
 import com.example.library.UI.Adapters.CategoryAdapter;
-import com.example.library.UI.Adapters.NewBooksAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -30,10 +28,8 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
     CategoryAdapter categoryAdapter;
-    NewBooksAdapter newBooksAdapter;
     List<CategoryModel> categoryModelList;
-    List<Books> BooksList;
-    private RecyclerView catRecycleView, newBooksRec;
+    private RecyclerView catRecycleView;
 
     FirebaseFirestore db;
 
@@ -46,8 +42,6 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         catRecycleView = root.findViewById(R.id.rec_category);
-        newBooksRec = root.findViewById(R.id.new_product_rec);
-
         db = FirebaseFirestore.getInstance();
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
@@ -74,30 +68,8 @@ public class HomeFragment extends Fragment {
                 Log.w(TAG, "Error getting documents.", e);
             }
         });
-        // Новые книги
-        GridLayoutManager gridLayoutManager2 = new GridLayoutManager(getActivity(), 2);
-        newBooksRec.setLayoutManager(gridLayoutManager2);
-        BooksList = new ArrayList<>();
-        newBooksAdapter = new NewBooksAdapter(getContext(), BooksList);
-        newBooksRec.setAdapter(newBooksAdapter);
-        db.collection("new_books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Books books = document.toObject(Books.class);
-                        BooksList.add(books);
-                        newBooksAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
 
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error getting documents.", e);
-            }
-        });
+
         return root;
     }
 }
