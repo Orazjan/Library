@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private Button regBtn, logBtn, homeBtn;
     private ProgressDialog loadingBar;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,41 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        Paper.init(this);
-
-        String UserEmailKey = Paper.book().read(Prevalent.UserEmailKey);
-        String userPasswordKey = Paper.book().read(Prevalent.UserPassword);
-        loadingBar.setTitle("Вход в приложение");
-        loadingBar.setMessage("Пожалуйста, подождите...");
-        loadingBar.setCanceledOnTouchOutside(false);
-        loadingBar.show();
-
-        if (!Objects.equals(UserEmailKey, "") && !Objects.equals(userPasswordKey, "")) {
-            if (!TextUtils.isEmpty(UserEmailKey) && !TextUtils.isEmpty(userPasswordKey)) {
-                auth.signInWithEmailAndPassword(UserEmailKey, userPasswordKey).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        loadingBar.setTitle("Вход в приложение");
-                        loadingBar.setMessage("Пожалуйста, подождите...");
-                        loadingBar.setCanceledOnTouchOutside(false);
-                        loadingBar.show();
-                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                        Toast.makeText(MainActivity.this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        loadingBar.dismiss();
-                        Log.d("On Login", "onComplete: " + e.getMessage());
-                        Toast.makeText(MainActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-            }
-        }
+//Скоро добавлю автовход
     }
-
-
 }

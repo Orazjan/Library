@@ -2,7 +2,7 @@ package com.example.library.Model;
 
 import java.io.Serializable;
 
-public class Books implements Serializable {
+public class PopularBooksModel implements Serializable {
     private String name, author, img_url, description;
     private int price;
 
@@ -14,10 +14,10 @@ public class Books implements Serializable {
         this.price = price;
     }
 
-    public Books() {
+    public PopularBooksModel() {
     }
 
-    public Books(String author, String description, String img_url, String name, int price) {
+    public PopularBooksModel(String author, String description, String img_url, String name, int price) {
         this.author = author;
         this.description = description;
         this.img_url = img_url;

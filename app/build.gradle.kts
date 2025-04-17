@@ -33,6 +33,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
@@ -56,4 +57,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.circleimageview)
     implementation(libs.glide)
+    implementation (libs.firebase.appcheck.safetynet)
+    debugImplementation (libs.firebase.appcheck.debug)
 }

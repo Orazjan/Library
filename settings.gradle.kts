@@ -1,25 +1,16 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
         gradlePluginPortal()
-        mavenCentral()
-
-
-    }
-}
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
         google()
         mavenCentral()
     }
 }
-
-rootProject.name = "library"
-include(":app")
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+}
+rootProject.name = "library";
+include(":app");

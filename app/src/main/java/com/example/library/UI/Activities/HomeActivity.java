@@ -33,7 +33,6 @@ public class HomeActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
     Fragment homeFragment;
-    TextView Category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +43,8 @@ public class HomeActivity extends AppCompatActivity {
 
         homeFragment = new HomeFragment();
         loadFragment(homeFragment);
-        Category = findViewById(R.id.Category);
-        Category.setText("Категории");
+
+
         setSupportActionBar(binding.appBarHome.toolbar);
         binding.appBarHome.fab.setOnClickListener(new View.OnClickListener() {
             @Override

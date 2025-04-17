@@ -23,24 +23,18 @@
             <ImageView
                 android:id="@+id/item_image"
                 android:layout_width="300dp"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
-            <TextView
-                android:id="@+id/item_cost"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="34.0 сом"
-                android:textColor="#673AB7"
-                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/item_auuthor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/detailed_author_name"
+                android:textStyle="bold"
+                android:layout_marginBottom="10sp"
                 android:textSize="18sp" />
 
             <TextView
@@ -48,7 +42,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/detailed_product_name"
+                android:layout_marginBottom="10sp"
                 android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/item_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="34.0 сом"
+                android:textColor="#673AB7"
+
+                android:textSize="18sp" />
+
 
 
         </LinearLayout>

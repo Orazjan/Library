@@ -1,10 +1,8 @@
 package com.example.library.UI.Adapters;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.library.Model.CategoryModel;
 import com.example.library.R;
-//import com.example.library.UI.Activities.DetailedActivity;
-import com.example.library.UI.Activities.DetailedActivity;
 import com.example.library.UI.Activities.ShowAllActivity;
 
 import java.util.List;
@@ -43,13 +39,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         Glide.with(context).load(list.get(position).getImg_url()).into(holder.Category_image);
         holder.Category_name.setText(list.get(position).getName());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, ShowAllActivity.class);
-                intent.putExtra("type", list.get(position).getType());
-                context.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(v -> { // Используем лямбда-выражение для краткости
+            Log.d("CLICK", "Item clicked at position: " + position); // Проверка, что нажатие обрабатывается
+            Intent intent = new Intent(holder.itemView.getContext(), ShowAllActivity.class); // Получаем контекст от itemView
+            intent.putExtra("type", list.get(position).getType());
+            holder.itemView.getContext().startActivity(intent); // Запускаем Activity с правильным контекстом
         });
     }
 

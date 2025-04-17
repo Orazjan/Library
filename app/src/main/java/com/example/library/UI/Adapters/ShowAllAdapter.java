@@ -12,34 +12,35 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.library.Model.CategoryModel;
 import com.example.library.Model.showAllModel;
 import com.example.library.R;
 import com.example.library.UI.Activities.DetailedActivity;
+import com.example.library.UI.Activities.ShowAllActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class showAllAdapter extends RecyclerView.Adapter<showAllAdapter.ViewHolder> {
+public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHolder> {
     private Context context;
-    private ArrayList<showAllModel> list;
+    private List<showAllModel> list;
 
-    public showAllAdapter() {
+    public ShowAllAdapter() {
     }
 
-    public showAllAdapter(Context context, List<showAllModel> list) {
+    public ShowAllAdapter(Context context, List<showAllModel> list) {
         this.context = context;
-        this.list = new ArrayList<>(list);
+        this.list = list;
     }
 
     @NonNull
     @Override
-    public showAllAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ShowAllAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.show_all_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull showAllAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ShowAllAdapter.ViewHolder holder, int position) {
         if (context != null) {
             Glide.with(context).load(list.get(position).getImg_url()).into(holder.item_image);
         }
@@ -59,7 +60,12 @@ public class showAllAdapter extends RecyclerView.Adapter<showAllAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if (list != null) {
+            return list.size();
+        } else {
+
+            return 0;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

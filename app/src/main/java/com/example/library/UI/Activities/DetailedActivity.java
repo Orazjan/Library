@@ -12,8 +12,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.library.Model.Books;
+import com.example.library.Model.CategoryModel;
+import com.example.library.Model.PopularBooksModel;
 import com.example.library.Model.showAllModel;
 import com.example.library.R;
+import com.example.library.UI.Adapters.CategoryAdapter;
+import com.example.library.UI.Adapters.NewBooksAdapter;
+import com.example.library.UI.Adapters.PopularBooksAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DetailedActivity extends AppCompatActivity {
@@ -22,8 +28,14 @@ public class DetailedActivity extends AppCompatActivity {
     ImageView total_minus, total_plus;
     TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total;
     Button add_to_cart, buy_now;
-    private FirebaseFirestore fireBaseStone;
     showAllModel showAllModel = null;
+
+    Books book = null;
+    PopularBooksModel popularBooksModel = null;
+
+    CategoryModel categoryModel = null;
+    CategoryAdapter categoryAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +48,15 @@ public class DetailedActivity extends AppCompatActivity {
             return insets;
         });
 
-        fireBaseStone = FirebaseFirestore.getInstance();
+        FirebaseFirestore fireBaseStone = FirebaseFirestore.getInstance();
 
         final Object obj = getIntent().getSerializableExtra("detailed");
         if (obj instanceof showAllModel) {
             showAllModel = (showAllModel) obj;
+        } else if (obj instanceof Books) {
+            book = (Books) obj;
+        } else if (obj instanceof CategoryModel) {
+            categoryModel = (CategoryModel) obj;
         }
 
 
@@ -58,6 +74,21 @@ public class DetailedActivity extends AppCompatActivity {
         add_to_cart = findViewById(R.id.add_to_cart);
         buy_now = findViewById(R.id.buy_now);
 
+        if (categoryModel != null) {
+            Glide.with(getApplicationContext()).load(categoryModel.getImg_url()).into(detailed_img);
+            detailed_name.setText(categoryModel.getName());
+
+        }
+
+        if (book != null) {
+            Glide.with(getApplicationContext()).load(book.getImg_url()).into(detailed_img);
+            detailed_author.setText(book.getAuthor());
+            detailed_name.setText(book.getName());
+            detailed_price.setText(String.valueOf(book.getPrice()));
+            detailed_desc.setText(book.getDescription());
+
+        }
+
         if (showAllModel != null) {
             Glide.with(getApplicationContext()).load(showAllModel.getImg_url()).into(detailed_img);
             detailed_author.setText(showAllModel.getAuthor());
@@ -66,6 +97,5 @@ public class DetailedActivity extends AppCompatActivity {
             detailed_desc.setText(showAllModel.getDescription());
 
         }
-
     }
 }

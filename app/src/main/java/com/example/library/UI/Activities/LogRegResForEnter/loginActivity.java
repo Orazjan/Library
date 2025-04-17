@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.library.Prevalent.Prevalent;
 import com.example.library.R;
 import com.example.library.UI.Activities.HomeActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,14 +23,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import io.paperdb.Paper;
 
 public class loginActivity extends AppCompatActivity {
+
+
     private Button loginBtn;
     private FirebaseAuth auth;
     private EditText loginEmail, loginPassword;
     private ProgressDialog loadingBar;
-    private CheckBox login_checkbox;
     private TextView forgetPassword;
 
     @Override
@@ -44,34 +43,25 @@ public class loginActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.loginBtn);
         loginEmail = findViewById(R.id.loginEmail);
         loginPassword = findViewById(R.id.loginPassword);
-        login_checkbox = findViewById(R.id.login_checkbox);
         loadingBar = new ProgressDialog(this);
 
-        Paper.init(this);
 
-        loginBtn.setOnClickListener(v -> loginUser());
         forgetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(loginActivity.this, ResetPasswordActivity.class));
             }
         });
+        loginBtn.setOnClickListener(v -> loginUser());
     }
 
     private void loginUser() {
         String email = loginEmail.getText().toString();
         String password = loginPassword.getText().toString();
-        loadingBar.setTitle("Вход в приложение");
-        loadingBar.setMessage("Пожажалуйста, подождите...");
-        loadingBar.setCanceledOnTouchOutside(false);
-        loadingBar.show();
-        if (login_checkbox.isChecked()) {
-            Paper.book().write(Prevalent.UserEmailKey, email);
-            Paper.book().write(Prevalent.UserPassword, password);
-        }
+
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Введите номер", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Введите почту", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Введите пароль", Toast.LENGTH_SHORT).show();
         } else if (password.length() < 6) {
@@ -90,7 +80,6 @@ public class loginActivity extends AppCompatActivity {
                     } else {
                         loadingBar.dismiss();
                         Toast.makeText(loginActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(loginActivity.this, HomeActivity.class));
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
