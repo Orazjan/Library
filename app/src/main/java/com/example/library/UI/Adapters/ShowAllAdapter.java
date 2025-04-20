@@ -12,23 +12,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.library.Model.CategoryModel;
-import com.example.library.Model.showAllModel;
+import com.example.library.Model.Books;
 import com.example.library.R;
 import com.example.library.UI.Activities.DetailedActivity;
-import com.example.library.UI.Activities.ShowAllActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHolder> {
     private Context context;
-    private List<showAllModel> list;
+    private List<Books> list;
 
     public ShowAllAdapter() {
     }
 
-    public ShowAllAdapter(Context context, List<showAllModel> list) {
+    public ShowAllAdapter(Context context, List<Books> list) {
         this.context = context;
         this.list = list;
     }

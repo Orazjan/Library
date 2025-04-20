@@ -8,23 +8,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.library.Model.Books;
 import com.example.library.Model.CategoryModel;
-import com.example.library.Model.PopularBooksModel;
 import com.example.library.R;
 import com.example.library.UI.Activities.ShowAllActivity;
+import com.example.library.Prevalent.returnRandom;
 import com.example.library.UI.Adapters.CategoryAdapter;
-import com.example.library.UI.Adapters.NewBooksAdapter;
-import com.example.library.UI.Adapters.PopularBooksAdapter;
+import com.example.library.UI.Adapters.ShowAllAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -38,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
 
@@ -47,17 +43,17 @@ public class HomeFragment extends Fragment {
     List<CategoryModel> categoryModelList;
     private RecyclerView catRecycleView;
 
-    NewBooksAdapter newBooksAdapter;
+    ShowAllAdapter newBooksAdapter;
     List<Books> booksList;
     private RecyclerView newBookRecycleView;
 
-    PopularBooksAdapter popularBooksAdapter;
-    List<PopularBooksModel> popularBooksList;
+    ShowAllAdapter popularBooksAdapter;
+    List<Books> popularBooksList;
     private RecyclerView popularBooksRecycleView;
 
     TextView category_see_all, newProducts_see_all;
 
-
+    private int listSize;
     FirebaseFirestore db;
 
 
@@ -82,8 +78,8 @@ public class HomeFragment extends Fragment {
         newProducts_see_all = root.findViewById(R.id.newProducts_see_all);
         db = FirebaseFirestore.getInstance();
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false);
-        catRecycleView.setLayoutManager(gridLayoutManager);
+        GridLayoutManager CategoryLayoutManager = new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false);
+        catRecycleView.setLayoutManager(CategoryLayoutManager);
 
         category_see_all.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +98,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         categoryModelList = new ArrayList<>();
         categoryAdapter = new CategoryAdapter(getContext(), categoryModelList);
         catRecycleView.setAdapter(categoryAdapter);
@@ -117,7 +112,6 @@ public class HomeFragment extends Fragment {
                     }
                 }
             }
-
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -125,20 +119,20 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
-        GridLayoutManager NewBookgridLayoutManager = new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false);
+        GridLayoutManager NewBookgridLayoutManager = new GridLayoutManager(getActivity(), 3, RecyclerView.VERTICAL, false);
         newBookRecycleView.setLayoutManager(NewBookgridLayoutManager);
 
         booksList = new ArrayList<>();
-        newBooksAdapter = new NewBooksAdapter(getContext(), booksList);
+        newBooksAdapter = new ShowAllAdapter(getContext(), booksList);
         newBookRecycleView.setAdapter(newBooksAdapter);
-        db.collection("new_books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("allBooks").whereEqualTo("rate", 4).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Books books = document.toObject(Books.class);
                         booksList.add(books);
+                        listSize = booksList.size();
                         newBooksAdapter.notifyDataSetChanged();
                     }
                 }
@@ -149,31 +143,31 @@ public class HomeFragment extends Fragment {
                 Log.e(TAG, "Error getting documents.", e);
             }
         });
-
-        GridLayoutManager PopularBookgridLayoutManager = new GridLayoutManager(getActivity(),
-                2, RecyclerView.VERTICAL, false);
-        newBookRecycleView.setLayoutManager(PopularBookgridLayoutManager);
-
-        popularBooksList = new ArrayList<>();
-        popularBooksAdapter = new PopularBooksAdapter(getContext(), popularBooksList);
-        popularBooksRecycleView.setAdapter(popularBooksAdapter);
-        db.collection("PopularBooks").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        PopularBooksModel popularBooksModel = document.toObject(PopularBooksModel.class);
-                        popularBooksList.add(popularBooksModel);
-                        popularBooksAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting documents.", e);
-            }
-        });
+//
+//        GridLayoutManager PopularBookgridLayoutManager = new GridLayoutManager(getActivity(),
+//                2, RecyclerView.VERTICAL, false);
+//        popularBooksRecycleView.setLayoutManager(PopularBookgridLayoutManager);
+//
+//        popularBooksList = new ArrayList<>();
+//        popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
+//        popularBooksRecycleView.setAdapter(popularBooksAdapter);
+//        db.collection("PopularBooks").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    for (QueryDocumentSnapshot document : task.getResult()) {
+//                        Books popularBooksModel = document.toObject(Books.class);
+//                        popularBooksList.add(popularBooksModel);
+//                        popularBooksAdapter.notifyDataSetChanged();
+//                    }
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Log.e(TAG, "Error getting documents.", e);
+//            }
+//        });
         return root;
     }
 }

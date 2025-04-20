@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.library.Model.showAllModel;
+import com.example.library.Model.Books;
 import com.example.library.R;
 import com.example.library.UI.Adapters.ShowAllAdapter;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,8 +29,7 @@ public class ShowAllActivity extends AppCompatActivity {
     Context context;
     RecyclerView recycler_View;
     ShowAllAdapter showAllAdapter;
-    List<showAllModel> showAllModelList;
-
+    List<Books> showAllModelList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +66,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений
@@ -87,7 +86,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений
@@ -107,7 +106,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений
@@ -127,7 +126,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений
@@ -147,7 +146,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений
@@ -167,7 +166,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений
@@ -187,7 +186,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     if (snapshots != null) {
                         showAllModelList.clear(); // Очищаем список перед добавлением новых данных
                         for (DocumentSnapshot documentSnapshot : snapshots) {
-                            showAllModel showAllModel = documentSnapshot.toObject(showAllModel.class);
+                            Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
                         }
                         showAllAdapter.notifyDataSetChanged(); // Обновляем адаптер после получения всех изменений

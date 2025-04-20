@@ -23,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.library.databinding.ActivityHomeBinding;
 
+import io.paperdb.Paper;
+
 public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -67,6 +69,8 @@ public class HomeActivity extends AppCompatActivity {
 
 
         logoutBtn.setOnClickListener(v -> {
+            Paper.init(this);
+            Paper.book().destroy();
             startActivity(new Intent(HomeActivity.this, loginActivity.class));
             finish();
         });

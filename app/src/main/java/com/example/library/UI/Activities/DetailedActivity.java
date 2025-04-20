@@ -14,12 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.example.library.Model.Books;
 import com.example.library.Model.CategoryModel;
-import com.example.library.Model.PopularBooksModel;
-import com.example.library.Model.showAllModel;
 import com.example.library.R;
 import com.example.library.UI.Adapters.CategoryAdapter;
-import com.example.library.UI.Adapters.NewBooksAdapter;
-import com.example.library.UI.Adapters.PopularBooksAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DetailedActivity extends AppCompatActivity {
@@ -28,11 +24,8 @@ public class DetailedActivity extends AppCompatActivity {
     ImageView total_minus, total_plus;
     TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total, rating;
     Button add_to_cart, buy_now;
-    showAllModel showAllModel = null;
-
-
-    Books book = null;
-    PopularBooksModel popularBooksModel = null;
+    Books showAllModel = null;
+    Books popularBooksModel = null;
 
     CategoryModel categoryModel = null;
     CategoryAdapter categoryAdapter;
@@ -52,10 +45,8 @@ public class DetailedActivity extends AppCompatActivity {
         FirebaseFirestore fireBaseStone = FirebaseFirestore.getInstance();
 
         final Object obj = getIntent().getSerializableExtra("detailed");
-        if (obj instanceof showAllModel) {
-            showAllModel = (showAllModel) obj;
-        } else if (obj instanceof Books) {
-            book = (Books) obj;
+        if (obj instanceof Books) {
+            showAllModel = (Books) obj;
         } else if (obj instanceof CategoryModel) {
             categoryModel = (CategoryModel) obj;
         }
@@ -78,18 +69,6 @@ public class DetailedActivity extends AppCompatActivity {
         if (categoryModel != null) {
             Glide.with(getApplicationContext()).load(categoryModel.getImg_url()).into(detailed_img);
             detailed_name.setText(categoryModel.getName());
-
-        }
-
-        if (book != null) {
-            Glide.with(getApplicationContext()).load(book.getImg_url()).into(detailed_img);
-            detailed_author.setText(book.getAuthor());
-            detailed_name.setText(book.getName());
-            detailed_price.setText(String.valueOf(book.getPrice()));
-//            detailed_desc.setHeight(book.getDescription().length());
-            detailed_desc.setText(book.getDescription());
-            rating.setText(String.valueOf(book.getRate()));
-
         }
 
         if (showAllModel != null) {
@@ -97,7 +76,6 @@ public class DetailedActivity extends AppCompatActivity {
             detailed_author.setText(showAllModel.getAuthor());
             detailed_name.setText(showAllModel.getName());
             detailed_price.setText(String.valueOf(showAllModel.getPrice()));
-//            detailed_desc.setHeight(book.getDescription().length());
             detailed_desc.setText(showAllModel.getDescription());
             rating.setText(String.valueOf(showAllModel.getRate()));
         }

@@ -49,7 +49,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 String email = editText.getText().toString();
                 if (TextUtils.isEmpty(email)) {
                     makeText(ResetPasswordActivity.this, "Введите почту", LENGTH_SHORT).show();
-                    return;
                 } else {
                     auth.sendPasswordResetEmail(email).addOnCompleteListener(ResetPasswordActivity.this, new OnCompleteListener<Void>() {
                         @Override
@@ -66,12 +65,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
                             Log.d("On Reset Password", "onComplete: " + e.getMessage());
                         }
                     });
-
                 }
-
-
             }
         });
-
     }
 }

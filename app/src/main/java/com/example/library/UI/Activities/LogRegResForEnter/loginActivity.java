@@ -85,7 +85,7 @@ public class loginActivity extends AppCompatActivity {
                         if (checkBox.isChecked()) {
                             PaperBookWriting(email, password);
                         }
-                        Paper.book().destroy();
+
                         startActivity(new Intent(loginActivity.this, HomeActivity.class));
                         finish();
                     } else {

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         String userEmailKeyFromPaper = Paper.book().read(Prevalent.UserEmailKey);
         String userPasswordKeyFromPaper = Paper.book().read(Prevalent.UserPassword);
 
-        loadingBar.setTitle("Вход в приложение");
+        loadingBar.setTitle("Автовход в приложение");
         loadingBar.setMessage("Пожалуйста, подождите...");
         loadingBar.setCanceledOnTouchOutside(false);
 
@@ -90,9 +90,9 @@ public class MainActivity extends AppCompatActivity {
                                 loadingBar.dismiss();
                                 if (task.isSuccessful()) {
                                     startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                                    Toast.makeText(MainActivity.this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "Автовход выполнен успешно!", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(MainActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "Ошибка автовхода!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         })
@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 loadingBar.dismiss();
-                                Log.e("On Login Failure", "Ошибка входа: " + e.getMessage());
-                                Toast.makeText(MainActivity.this, "Ошибка входа: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.e("On Login Failure", "Ошибка автовхода: " + e.getMessage());
+                                Toast.makeText(MainActivity.this, "Ошибка автовхода: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
             } else {
