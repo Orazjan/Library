@@ -30,7 +30,7 @@
     <string name="enter_email">Введите email</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="detailed_price">Price</string>
+    <string name="detailed_price">Цена </string>
     <string name="detailed_som">сом</string>
     <string name="detailed_20">20</string>
     <string name="detailed_add_to_cart">Добавить в корзину</string>
@@ -40,5 +40,6 @@
     <string name="detailed_product_description">Product description</string>
     <string name="detailed_img_from_detailed">img_from_detailed</string>
     <string name="detailed_1">1</string>
+    <string name="category_name">Category Name</string>
 
 </resources>

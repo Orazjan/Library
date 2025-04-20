@@ -35,7 +35,6 @@ public class regActivity extends AppCompatActivity {
     private Button regButton;
     private EditText userEmail, userPassword;
     private ProgressDialog progressBar;
-    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,19 +84,16 @@ public class regActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(regActivity.this, "Подтверждено. Пожалуйста, проверьте вашу почту.", Toast.LENGTH_LONG).show();
                 dialog.dismiss();
-                // После подтверждения можно перенаправить пользователя на другой экран, например, экран входа
                 startActivity(new Intent(regActivity.this, SettingsActivity.class)); // Замените LoginActivity на нужный класс
-                finish(); // Закрыть Activity регистрации
+                finish();
             }
         });
         builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(regActivity.this, "Подтверждение отменено.", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
-                // Можно добавить дополнительное действие при отмене, например, предложить повторную отправку письма
             }
         });
-
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -127,11 +123,11 @@ public class regActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 FirebaseUser user = auth.getCurrentUser();
                                 if (user != null) {
-                                    sendVerificationEmail(user); // Отправляем письмо после успешной регистрации
+                                    sendVerificationEmail(user);
                                 }
                                 Toast.makeText(regActivity.this, "Регистрация прошла успешно! Пожалуйста, подтвердите вашу почту.", Toast.LENGTH_LONG).show();
                                 progressBar.dismiss();
-                                // Не перенаправляем сразу на SettingsActivity, ждем подтверждения
+                                finish();
                             } else {
                                 String errorMessage = "Ошибка регистрации! Неправильные данные";
                                 if (task.getException() != null) {

@@ -4,7 +4,15 @@ import java.io.Serializable;
 
 public class Books implements Serializable {
     private String name, author, img_url, description;
-    private int price;
+    private int price, rate;
+
+    public int getRate() {
+        return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
 
     public int getPrice() {
         return price;
@@ -17,12 +25,13 @@ public class Books implements Serializable {
     public Books() {
     }
 
-    public Books(String author, String description, String img_url, String name, int price) {
+    public Books(String author, String description, String img_url, String name, int price, int rate) {
         this.author = author;
         this.description = description;
         this.img_url = img_url;
         this.name = name;
         this.price = price;
+        this.rate = rate;
     }
 
     public String getDescription() {

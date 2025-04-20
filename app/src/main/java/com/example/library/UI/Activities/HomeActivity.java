@@ -2,19 +2,16 @@ package com.example.library.UI.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.Menu;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.library.R;
-import com.example.library.UI.Activities.ui.home.HomeFragment;
 import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
+import com.example.library.UI.Activities.ui.home.HomeFragment;
 
-import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -26,65 +23,63 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.library.databinding.ActivityHomeBinding;
 
-import io.paperdb.Paper;
-
 public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
     Fragment homeFragment;
+    ImageView logoutBtn, settingBtn;
+    private boolean doubleBackToExitPressedOnce = false;
+    private static final int DOUBLE_BACK_PRESS_INTERVAL = 2000; // Миллисекунды между нажатиями
+
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (doubleBackToExitPressedOnce) {
+                finishAffinity();
+                return;
+            }
+
+            doubleBackToExitPressedOnce = true;
+            Toast.makeText(HomeActivity.this, "Нажмите 'Назад' ещё раз для выхода", Toast.LENGTH_SHORT).show();
+
+            new android.os.Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, DOUBLE_BACK_PRESS_INTERVAL);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+
+        super.onCreate(savedInstanceState);
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         homeFragment = new HomeFragment();
         loadFragment(homeFragment);
 
+        logoutBtn = findViewById(R.id.logoutBtn);
+        settingBtn = findViewById(R.id.settingsBtn);
 
-        setSupportActionBar(binding.appBarHome.toolbar);
-        binding.appBarHome.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Здесь должен быть переход в корзину", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
-            }
-        });
         DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow).setOpenableLayout(drawer).build();
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.nav_cart) {
 
-                } else if (id == R.id.nav_settings) {
-                    Intent settingIntent = new Intent(HomeActivity.this, SettingsActivity.class);
-                    startActivity(settingIntent);
-
-                } else if (id == R.id.nav_logout) {
-                    Paper.book().destroy();
-                    Intent loginIntent = new Intent(HomeActivity.this, loginActivity.class);
-                    startActivity(loginIntent);
-                }
-                DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return false;
-            }
-
+        logoutBtn.setOnClickListener(v -> {
+            startActivity(new Intent(HomeActivity.this, loginActivity.class));
+            finish();
         });
+        settingBtn.setOnClickListener(view -> {
+            startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
+            finish();
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        onBackPressedCallback.remove();
     }
 
     private void loadFragment(Fragment homeFragment) {
@@ -95,7 +90,6 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
@@ -103,7 +97,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 }

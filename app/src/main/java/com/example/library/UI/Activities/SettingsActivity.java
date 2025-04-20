@@ -25,13 +25,17 @@ import com.example.library.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity {
     private Button saveSettingsTv, changeBtn;
     private FirebaseAuth mAuth;
-
+    private EditText userName, userFam;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,21 +47,26 @@ public class SettingsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference("user");
 
         changeBtn = findViewById(R.id.btnChangeEmail);
         saveSettingsTv = findViewById(R.id.save_settings_tv);
         mAuth = FirebaseAuth.getInstance();
+        userName = findViewById(R.id.userName);
+        userFam = findViewById(R.id.userFam);
 
         saveSettingsTv.setOnClickListener(view ->
-
         {
-            new Intent(this, HomeActivity.class);
+            saveUserDataToFirebase();
+            Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
+            finish();
         });
         changeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showChangeEmailDialog();
-
             }
         });
     }
@@ -126,6 +135,25 @@ public class SettingsActivity extends AppCompatActivity {
                                 SignInMethodQueryResult result = task.getResult();
                                 if (result != null && result.getSignInMethods().size() > 0) {
                                     Toast.makeText(SettingsActivity.this, "Этот адрес электронной почты уже используется.", Toast.LENGTH_LONG).show();
+                                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+                                    if (currentUser != null) {
+                                        String uid = currentUser.getUid();
+
+                                        DatabaseReference userRef = databaseReference.child(uid);
+
+                                        Map<String, String> userData = new HashMap<>();
+
+                                        userData.put("userMail", newEmail);
+
+                                        userRef.setValue(userData)
+                                                .addOnSuccessListener(aVoid -> {
+                                                    Toast.makeText(SettingsActivity.this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
+
+                                                });
+
+
+                                    }
                                 } else {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     if (user != null) {
@@ -154,5 +182,39 @@ public class SettingsActivity extends AppCompatActivity {
                         });
             }
         });
+    }
+
+    private void saveUserDataToFirebase() {
+        String name = userName.getText().toString().trim();
+        String family = userFam.getText().toString().trim();
+
+        if (!name.isEmpty() && !family.isEmpty()) {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser != null) {
+                String email = currentUser.getEmail();
+                String uid = currentUser.getUid();
+                DatabaseReference userRef = databaseReference.child(uid);
+
+                Map<String, String> userData = new HashMap<>();
+                userData.put("username", name);
+                userData.put("userFam", family);
+                userData.put("userMail", email);
+
+                userRef.setValue(userData)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
+                            userName.getText().clear();
+                            userFam.getText().clear();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Ошибка сохранения данных: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                Toast.makeText(this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            Toast.makeText(this, "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show();
+        }
     }
 }

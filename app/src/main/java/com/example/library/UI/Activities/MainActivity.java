@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -46,18 +47,21 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         auth = FirebaseAuth.getInstance();
-        regBtn = (Button) findViewById(R.id.regBtn);
-        logBtn = (Button) findViewById(R.id.logbtn);
+        regBtn = findViewById(R.id.regBtn);
+        logBtn = findViewById(R.id.logbtn);
         loadingBar = new ProgressDialog(this);
-
+        Paper.init(this);
+        PaperRead();
 
         logBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startActivity(new Intent(MainActivity.this, loginActivity.class));
                 loadingBar.dismiss();
             }
         });
+
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,6 +70,47 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//Скоро добавлю автовход
+    }
+
+    private void PaperRead() {
+        String userEmailKeyFromPaper = Paper.book().read(Prevalent.UserEmailKey);
+        String userPasswordKeyFromPaper = Paper.book().read(Prevalent.UserPassword);
+
+        loadingBar.setTitle("Вход в приложение");
+        loadingBar.setMessage("Пожалуйста, подождите...");
+        loadingBar.setCanceledOnTouchOutside(false);
+
+        if (userEmailKeyFromPaper != null && userPasswordKeyFromPaper != null) {
+            if (!TextUtils.isEmpty(userEmailKeyFromPaper) && !TextUtils.isEmpty(userPasswordKeyFromPaper)) {
+                loadingBar.show();
+                auth.signInWithEmailAndPassword(userEmailKeyFromPaper, userPasswordKeyFromPaper)
+                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                loadingBar.dismiss();
+                                if (task.isSuccessful()) {
+                                    startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                                    Toast.makeText(MainActivity.this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Ошибка входа!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                loadingBar.dismiss();
+                                Log.e("On Login Failure", "Ошибка входа: " + e.getMessage());
+                                Toast.makeText(MainActivity.this, "Ошибка входа: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+            } else {
+                Log.w("PaperRead", "Получены пустые email или пароль из Paper.");
+                Toast.makeText(MainActivity.this, "Не удалось получить данные для автологина.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.i("PaperRead", "Данные email или пароля не найдены в Paper.");
+//            Toast.makeText(MainActivity.this, "Автоматический вход невозможен. Проверьте свои данные.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

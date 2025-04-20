@@ -26,9 +26,10 @@ public class DetailedActivity extends AppCompatActivity {
 
     ImageView detailed_img;
     ImageView total_minus, total_plus;
-    TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total;
+    TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total, rating;
     Button add_to_cart, buy_now;
     showAllModel showAllModel = null;
+
 
     Books book = null;
     PopularBooksModel popularBooksModel = null;
@@ -59,7 +60,6 @@ public class DetailedActivity extends AppCompatActivity {
             categoryModel = (CategoryModel) obj;
         }
 
-
         detailed_img = findViewById(R.id.detailed_img);
 
         total_minus = findViewById(R.id.total_minus);
@@ -70,6 +70,7 @@ public class DetailedActivity extends AppCompatActivity {
         detailed_desc = findViewById(R.id.detailed_desc);
         detailed_price = findViewById(R.id.detailed_price);
         detailed_total = findViewById(R.id.detailed_total);
+        rating = findViewById(R.id.rating);
 
         add_to_cart = findViewById(R.id.add_to_cart);
         buy_now = findViewById(R.id.buy_now);
@@ -85,7 +86,9 @@ public class DetailedActivity extends AppCompatActivity {
             detailed_author.setText(book.getAuthor());
             detailed_name.setText(book.getName());
             detailed_price.setText(String.valueOf(book.getPrice()));
+//            detailed_desc.setHeight(book.getDescription().length());
             detailed_desc.setText(book.getDescription());
+            rating.setText(String.valueOf(book.getRate()));
 
         }
 
@@ -94,8 +97,24 @@ public class DetailedActivity extends AppCompatActivity {
             detailed_author.setText(showAllModel.getAuthor());
             detailed_name.setText(showAllModel.getName());
             detailed_price.setText(String.valueOf(showAllModel.getPrice()));
+//            detailed_desc.setHeight(book.getDescription().length());
             detailed_desc.setText(showAllModel.getDescription());
-
+            rating.setText(String.valueOf(showAllModel.getRate()));
         }
+
+
+        total_plus.setOnClickListener(v -> {
+            int total = Integer.parseInt(detailed_total.getText().toString());
+            total++;
+            detailed_total.setText(String.valueOf(total));
+
+        });
+        total_minus.setOnClickListener(v -> {
+            int total = Integer.parseInt(detailed_total.getText().toString());
+            if (total > 1) {
+                total--;
+                detailed_total.setText(String.valueOf(total));
+            }
+        });
     }
 }

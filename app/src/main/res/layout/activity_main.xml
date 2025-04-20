@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="200sp"
+        android:layout_width="match_parent"
+        android:layout_height="466dp"
         android:layout_centerInParent="true"
         android:contentDescription="@string/this_is_logo_text"
         android:src="@drawable/logo">

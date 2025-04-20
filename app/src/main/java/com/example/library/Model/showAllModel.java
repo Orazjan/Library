@@ -4,18 +4,23 @@ import java.io.Serializable;
 
 public class showAllModel implements Serializable {
     private String name, author, img_url, type, description;
-    private int price;
+    private int price, rate;
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
 
     public showAllModel() {
     }
 
-    public showAllModel(String author, String img_url, String description, String name, int price, String type) {
+    public showAllModel(String author, String img_url, String description, String name, int price, String type, int rate) {
         this.author = author;
         this.img_url = img_url;
         this.name = name;
         this.price = price;
         this.type = type;
         this.description = description;
+        this.rate = rate;
     }
 
     public String getDescription() {
@@ -64,5 +69,9 @@ public class showAllModel implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getRate() {
+        return rate;
     }
 }

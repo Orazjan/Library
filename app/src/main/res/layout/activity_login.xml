@@ -10,11 +10,10 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="100sp"
+        android:layout_width="162dp"
+        android:layout_height="256dp"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="150sp"
-        android:layout_marginTop="90sp"
         android:layout_marginRight="150sp"
         android:src="@drawable/logo"
 
@@ -63,21 +62,29 @@
 
     <LinearLayout
         android:id="@+id/linear_layout"
-        android:layout_width="500sp"
+        android:layout_width="380sp"
         android:layout_height="wrap_content"
         android:layout_below="@id/loginPassword"
         android:layout_marginStart="15sp"
         android:orientation="horizontal">
 
+        <CheckBox
+            android:id="@+id/checkBoxBlvme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15sp"
+            android:alpha="0.5"
+            android:text="@string/believe_me" />
+
         <TextView
             android:id="@+id/forgetPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15sp"
-            android:layout_marginTop="5sp"
-            android:layout_marginBottom="5sp"
+            android:layout_marginStart="70sp"
             android:hint="@string/forget_password"
-            android:textSize="17sp" />
+            android:textSize="17sp"
+
+            />
 
     </LinearLayout>
 

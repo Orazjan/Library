@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.library"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.library"
@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.location)
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -57,6 +58,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.circleimageview)
     implementation(libs.glide)
-    implementation (libs.firebase.appcheck.safetynet)
-    debugImplementation (libs.firebase.appcheck.debug)
+    implementation(libs.firebase.appcheck.safetynet)
+    debugImplementation(libs.firebase.appcheck.debug)
 }
