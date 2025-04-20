@@ -3,7 +3,6 @@ package com.example.library.UI.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -90,12 +89,6 @@ public class HomeActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.nav_host_fragment_content_home, homeFragment);
         transaction.commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
     }
 
     @Override

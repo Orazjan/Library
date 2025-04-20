@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="match_parent"
-        android:layout_height="466dp"
+        android:layout_width="264dp"
+        android:layout_height="330dp"
         android:layout_centerInParent="true"
         android:contentDescription="@string/this_is_logo_text"
         android:src="@drawable/logo">
@@ -23,8 +23,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10sp"
         android:text="@string/Slogan"
-        android:textColor="@color/forText"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold">
 

@@ -41,5 +41,6 @@
     <string name="detailed_img_from_detailed">img_from_detailed</string>
     <string name="detailed_1">1</string>
     <string name="category_name">Category Name</string>
+    <string name="show_all">Посмотреть все</string>
 
 </resources>

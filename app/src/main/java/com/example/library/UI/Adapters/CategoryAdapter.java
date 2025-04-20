@@ -43,6 +43,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             Log.d("CLICK", "Item clicked at position: " + position); // Проверка, что нажатие обрабатывается
             Intent intent = new Intent(holder.itemView.getContext(), ShowAllActivity.class); // Получаем контекст от itemView
             intent.putExtra("type", list.get(position).getType());
+            intent.putExtra("getName", list.get(position).getName());
             holder.itemView.getContext().startActivity(intent); // Запускаем Activity с правильным контекстом
         });
     }

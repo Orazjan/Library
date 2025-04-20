@@ -3,10 +3,12 @@ package com.example.library.UI.Activities;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.WindowDecorActionBar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -30,6 +32,7 @@ public class ShowAllActivity extends AppCompatActivity {
     RecyclerView recycler_View;
     ShowAllAdapter showAllAdapter;
     List<Books> showAllModelList;
+    TextView categoryname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,19 +45,22 @@ public class ShowAllActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        String type = getIntent().getStringExtra("type");
 
-        Log.d("TYPE", type);
-
+        categoryname = findViewById(R.id.categoryName);
         recycler_View = findViewById(R.id.recycler_View);
         recycler_View.setLayoutManager((new GridLayoutManager(this, 2)));
         showAllModelList = new ArrayList<>();
         context = this;
         showAllAdapter = new ShowAllAdapter(context, showAllModelList);
         recycler_View.setAdapter(showAllAdapter);
+        String catname = getIntent().getStringExtra("getName");
+
         FirebaseFirestore fireBaseStone = FirebaseFirestore.getInstance();
 
-        if (type.equalsIgnoreCase("biznes")) {
+        String type = getIntent().getStringExtra("type");
+        categoryname.setText(catname);
+
+        if (type != null && type.equalsIgnoreCase("biznes")) {
             fireBaseStone.collection("allBooks").whereEqualTo("type", "biznes").addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
@@ -64,7 +70,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     }
 
                     if (snapshots != null) {
-                        showAllModelList.clear(); // Очищаем список перед добавлением новых данных
+                        showAllModelList.clear();
                         for (DocumentSnapshot documentSnapshot : snapshots) {
                             Books showAllModel = documentSnapshot.toObject(Books.class);
                             showAllModelList.add(showAllModel);
