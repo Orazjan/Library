@@ -23,14 +23,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailedActivity extends AppCompatActivity {
 
     ImageView detailed_img, total_minus, total_plus;
     TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total, rating;
     Button add_to_cart, buy_now;
     Books showAllModel = null;
-    CartItem item;
     CategoryModel categoryModel = null;
+    List<CartItem> cartItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class DetailedActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        cartItems = new ArrayList<>();
         final Object obj = getIntent().getSerializableExtra("detailed");
         if (obj instanceof Books) {
             showAllModel = (Books) obj;
@@ -80,7 +83,12 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
         add_to_cart.setOnClickListener(v -> {
-            Toast.makeText(this, "Что-нибудь", Toast.LENGTH_SHORT).show();
+            if (showAllModel != null) {
+                int quantity = Integer.parseInt(detailed_total.getText().toString());
+                addToCart(showAllModel, quantity);
+            } else {
+                Toast.makeText(this, "Ошибка: информация о книге не загружена", Toast.LENGTH_SHORT).show();
+            }
         });
 
         total_plus.setOnClickListener(v -> {
@@ -104,25 +112,57 @@ public class DetailedActivity extends AppCompatActivity {
     public void addToCart(Books book, int quantity) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
-            CartItem cartItem = new CartItem(book, quantity);
+            if (cartItems != null) {
+                for (CartItem item : cartItems) {
+                    if (item.getBook().getId() == book.getId()) {
+                        updateQuantityInFirestore(item, item.getQuantity() + quantity,
+                                cartItems.indexOf(item));
+                        Toast.makeText(this, "Количество обновлено", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users")
-                    .document(userId)
+            CartItem newItem = new CartItem(book, quantity);
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.getUid())
                     .collection("cart")
-                    .add(cartItem) // Автоматический ID документа
+                    .add(newItem)
                     .addOnSuccessListener(documentReference -> {
+                        newItem.setDocumentId(documentReference.getId());
+                        if (cartItems == null) {
+                            cartItems = new ArrayList<>();
+                        }
+                        cartItems.add(newItem);
                         Toast.makeText(this, "Добавлено в корзину", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         } else {
-            // Перенаправить на экран входа
+            Toast.makeText(this, "Пожалуйста, войдите в систему", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, loginActivity.class));
         }
     }
 
+    private void updateQuantityInFirestore(CartItem item, int newQuantity, int position) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.getUid())
+                    .collection("cart")
+                    .document(item.getDocumentId())
+                    .update("quantity", newQuantity)
+                    .addOnSuccessListener(aVoid -> {
+                        item.setQuantity(newQuantity);
+                        Toast.makeText(this, "Количество обновлено", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Ошибка обновления", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
 }
 

@@ -8,8 +8,6 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -17,7 +15,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.library.R;
 import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
-import com.example.library.UI.Activities.ui.home.HomeFragment;
 import com.example.library.databinding.ActivityHomeBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -27,7 +24,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
-    Fragment homeFragment;
     private FloatingActionButton fab;
     private ImageView logoutBtn, settingBtn;
     private boolean doubleBackToExitPressedOnce = false;
@@ -57,16 +53,24 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        homeFragment = new HomeFragment();
-        loadFragment(homeFragment);
+        DrawerLayout drawer = binding.drawerLayout;
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home,
+                R.id.nav_gallery,
+                R.id.nav_slideshow)
+                .setOpenableLayout(drawer)
+                .build();
 
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
+
+        try {
+            NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         logoutBtn = findViewById(R.id.logoutBtn);
         settingBtn = findViewById(R.id.settingsBtn);
         fab = findViewById(R.id.fab);
-
-        DrawerLayout drawer = binding.drawerLayout;
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow).setOpenableLayout(drawer).build();
-
 
         logoutBtn.setOnClickListener(v -> {
             Paper.init(this);
@@ -74,10 +78,12 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(HomeActivity.this, loginActivity.class));
             finish();
         });
+
         settingBtn.setOnClickListener(view -> {
             startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
             finish();
         });
+
         fab.setOnClickListener(V -> {
             startActivity(new Intent(HomeActivity.this, CartActivity.class));
         });
@@ -87,12 +93,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         onBackPressedCallback.remove();
-    }
-
-    private void loadFragment(Fragment homeFragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment_content_home, homeFragment);
-        transaction.commit();
     }
 
     @Override

@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             Log.i("PaperRead", "Данные email или пароля не найдены в Paper.");
-//            Toast.makeText(MainActivity.this, "Автоматический вход невозможен. Проверьте свои данные.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Автоматический вход невозможен. Проверьте свои данные.", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -1,18 +1,25 @@
 package com.example.library.UI.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.library.Model.CartItem;
 import com.example.library.R;
+import com.example.library.UI.Activities.CartActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -40,6 +47,51 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.quantity.setText(String.valueOf(item.getQuantity()));
         holder.price.setText(String.valueOf(item.getBook().getPrice() * item.getQuantity()));
         Glide.with(context).load(item.getBook().getImg_url()).into(holder.bookImage);
+
+        holder.itemView.findViewById(R.id.btn_remove).setOnClickListener(v -> {
+            new AlertDialog.Builder(context)
+                    .setTitle("Удаление товара")
+                    .setMessage("Вы уверены, что хотите удалить этот товар из корзины?")
+                    .setPositiveButton("Удалить", (dialog, which) -> {
+                        int currentPosition = holder.getAdapterPosition();
+                        if (currentPosition != RecyclerView.NO_POSITION) {
+                            removeFromFirestore(item.getDocumentId(), currentPosition);
+                        }
+                    })
+                    .setNegativeButton("Отмена", null)
+                    .show();
+        });
+    }
+
+    private void removeFromFirestore(String documentId, int position) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.getUid())
+                    .collection("cart")
+                    .document(documentId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        // Удаляем элемент из списка
+                        if (position >= 0 && position < cartItems.size()) {
+                            cartItems.remove(position);
+                            notifyItemRemoved(position); // Уведомляем адаптер об изменении
+                        } else {
+                            Log.e("CartAdapter", "Invalid position for removal: " + position);
+                        }
+
+                        notifyItemRemoved(position);
+
+                        notifyItemRangeChanged(position, cartItems.size());
+
+                        updateTotalPrice();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Ошибка удаления: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
 
     @Override
@@ -63,5 +115,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
+    }
+
+    private void updateTotalPrice() {
+        if (context instanceof CartActivity) {
+            ((CartActivity) context).updateTotalPrice();
+        }
     }
 }

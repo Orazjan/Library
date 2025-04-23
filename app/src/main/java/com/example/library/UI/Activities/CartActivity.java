@@ -2,6 +2,7 @@ package com.example.library.UI.Activities;
 
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.library.Model.CartItem;
-import com.example.library.Prevalent.CartManager;
 import com.example.library.R;
 import com.example.library.UI.Adapters.CartAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,69 +24,83 @@ public class CartActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CartAdapter adapter;
     private Button btnBuy;
+    private TextView totalPriceView;
+    private List<CartItem> cartItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-        btnBuy = findViewById(R.id.btnBuy);
-        recyclerView = findViewById(R.id.cart_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<CartItem> cartItems = CartManager.getInstance().getCartItems();
+        btnBuy = findViewById(R.id.btnBuy);
+        totalPriceView = findViewById(R.id.total_price);
+        recyclerView = findViewById(R.id.cart_recycler);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CartAdapter(this, cartItems);
         recyclerView.setAdapter(adapter);
-        btnBuy.setText("Купить сейчас за ");
+
         loadCartItems();
-        btnBuy.setOnClickListener(V ->
-        {
-            Toast.makeText(this, "Здесь должно открываться покупка", Toast.LENGTH_SHORT).show();
+
+        btnBuy.setOnClickListener(v -> {
+            if (cartItems.isEmpty()) {
+                Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Оформление покупки", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     private void loadCartItems() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
-
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users")
-                    .document(userId)
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.getUid())
                     .collection("cart")
                     .addSnapshotListener((value, error) -> {
                         if (error != null) {
-                            Toast.makeText(this, "Ошибка загрузки", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Ошибка загрузки корзины", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        List<CartItem> cartItems = new ArrayList<>();
-                        for (DocumentSnapshot doc : value.getDocuments()) {
-                            CartItem item = doc.toObject(CartItem.class);
-                            if (item != null) {
-                                cartItems.add(item);
-                            }
-                        }
+                        if (value != null) {
+                            cartItems.clear();
+                            int totalPrice = 0;
 
-                        // Обновляем адаптер
-                        adapter.setCartItems(cartItems);
-                        adapter.notifyDataSetChanged();
+                            for (DocumentSnapshot doc : value.getDocuments()) {
+                                CartItem item = doc.toObject(CartItem.class);
+                                if (item != null) {
+                                    item.setDocumentId(doc.getId());
+                                    cartItems.add(item);
+                                    totalPrice += item.getBook().getPrice() * item.getQuantity();
+                                }
+                            }
+
+                            // Обновляем адаптер и общую сумму
+                            adapter.setCartItems(cartItems);
+                            adapter.notifyDataSetChanged();
+                            updateTotalPrice();
+                        }
                     });
+        } else {
+            Toast.makeText(this, "Пожалуйста, войдите в систему", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
-    private void removeFromCart(String bookId) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
+    public void updateTotalPrice() {
+        runOnUiThread(() -> {
+            int total = 0;
+            for (CartItem item : cartItems) {
+                total += item.getBook().getPrice() * item.getQuantity();
+            }
+            btnBuy.setText("Купить сейчас за " + total + " сом");
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users")
-                    .document(userId)
-                    .collection("cart")
-                    .document(bookId)
-                    .delete();
-        }
+            if (cartItems.isEmpty()) {
+                btnBuy.setEnabled(false);
+                Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
-
-
