@@ -23,6 +23,9 @@
             android:name=".UI.Activities.ShowAllActivity"
             android:exported="false" />
         <activity
+            android:name=".UI.Activities.CartActivity"
+            android:exported="false" />
+        <activity
             android:name=".UI.Activities.DetailedActivity"
             android:exported="false" />
         <activity

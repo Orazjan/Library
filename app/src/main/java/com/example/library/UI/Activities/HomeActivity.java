@@ -2,25 +2,24 @@ package com.example.library.UI.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.library.R;
-import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
-import com.example.library.UI.Activities.ui.home.HomeFragment;
-
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.library.R;
+import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
+import com.example.library.UI.Activities.ui.home.HomeFragment;
 import com.example.library.databinding.ActivityHomeBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import io.paperdb.Paper;
 
@@ -29,7 +28,8 @@ public class HomeActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
     Fragment homeFragment;
-    ImageView logoutBtn, settingBtn;
+    private FloatingActionButton fab;
+    private ImageView logoutBtn, settingBtn;
     private boolean doubleBackToExitPressedOnce = false;
     private static final int DOUBLE_BACK_PRESS_INTERVAL = 2000; // Миллисекунды между нажатиями
 
@@ -62,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
 
         logoutBtn = findViewById(R.id.logoutBtn);
         settingBtn = findViewById(R.id.settingsBtn);
+        fab = findViewById(R.id.fab);
 
         DrawerLayout drawer = binding.drawerLayout;
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow).setOpenableLayout(drawer).build();
@@ -76,6 +77,9 @@ public class HomeActivity extends AppCompatActivity {
         settingBtn.setOnClickListener(view -> {
             startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
             finish();
+        });
+        fab.setOnClickListener(V -> {
+            startActivity(new Intent(HomeActivity.this, CartActivity.class));
         });
     }
 

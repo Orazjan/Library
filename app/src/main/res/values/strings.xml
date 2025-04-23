@@ -42,5 +42,6 @@
     <string name="detailed_1">1</string>
     <string name="category_name">Category Name</string>
     <string name="show_all">Посмотреть все</string>
+    <string name="cart">Корзина</string>
 
 </resources>

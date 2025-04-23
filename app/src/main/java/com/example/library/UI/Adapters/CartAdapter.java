@@ -11,58 +11,54 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.library.Model.CartModel;
+import com.example.library.Model.CartItem;
 import com.example.library.R;
 
 import java.util.List;
 
-public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
-    List<CartModel> CartList;
+public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     private Context context;
+    private List<CartItem> cartItems;
 
-    public CartAdapter(Context context, List<CartModel> CartList) {
+    public CartAdapter(Context context, List<CartItem> cartItems) {
         this.context = context;
-        this.CartList = CartList;
+        this.cartItems = cartItems;
     }
 
     @NonNull
     @Override
-    public CartAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_item, parent, false));
+    public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.cart_item, parent, false);
+        return new CartViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CartAdapter.ViewHolder holder, int position) {
-        if (context != null) {
-            Glide.with(context).load(CartList.get(position).getImg_url()).into(holder.cartImageDetail);
-        }
-        holder.cartAuthorDetail.setText(CartList.get(position).getAuthor());
-        holder.cartNameDetail.setText(CartList.get(position).getName());
-        holder.cartPriceDetail.setText(String.valueOf(CartList.get(position).getPrice()));
-        holder.count.setText(String.valueOf(CartList.get(position).getCount()));
+    public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
+        CartItem item = cartItems.get(position);
+        holder.bookName.setText(item.getBook().getName());
+        holder.bookAuthor.setText(item.getBook().getAuthor());
+        holder.quantity.setText(String.valueOf(item.getQuantity()));
+        holder.price.setText(String.valueOf(item.getBook().getPrice() * item.getQuantity()));
+
+        Glide.with(context).load(item.getBook().getImg_url()).into(holder.bookImage);
     }
 
     @Override
     public int getItemCount() {
-        return CartList.size();
+        return cartItems.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView cartImageDetail;
-        TextView cartAuthorDetail;
-        TextView cartNameDetail;
-        TextView cartPriceDetail;
-        TextView count;
+    public static class CartViewHolder extends RecyclerView.ViewHolder {
+        ImageView bookImage;
+        TextView bookName, bookAuthor, quantity, price;
 
-        public ViewHolder(@NonNull View itemView) {
+        public CartViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            cartImageDetail = itemView.findViewById(R.id.cartImageDetail);
-            cartAuthorDetail = itemView.findViewById(R.id.cartAuthorDetail);
-            cartNameDetail = itemView.findViewById(R.id.cartNameDetail);
-            cartPriceDetail = itemView.findViewById(R.id.cartPriceDetail);
-            count = itemView.findViewById(R.id.count);
-
+            bookImage = itemView.findViewById(R.id.cartImageDetail);
+            bookName = itemView.findViewById(R.id.cartNameDetail);
+            bookAuthor = itemView.findViewById(R.id.cartAuthorDetail);
+            quantity = itemView.findViewById(R.id.count);
+            price = itemView.findViewById(R.id.cartPriceDetail);
         }
     }
 }

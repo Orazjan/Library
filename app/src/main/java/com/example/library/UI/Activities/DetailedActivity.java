@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.example.library.Model.Books;
 import com.example.library.Model.CategoryModel;
+import com.example.library.Prevalent.CartManager;
 import com.example.library.R;
 import com.example.library.UI.Adapters.CategoryAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,7 +27,6 @@ public class DetailedActivity extends AppCompatActivity {
     TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total, rating;
     Button add_to_cart, buy_now;
     Books showAllModel = null;
-    Books popularBooksModel = null;
 
     CategoryModel categoryModel = null;
     CategoryAdapter categoryAdapter;
@@ -92,6 +93,17 @@ public class DetailedActivity extends AppCompatActivity {
             if (total > 1) {
                 total--;
                 detailed_total.setText(String.valueOf(total));
+            }
+        });
+
+        add_to_cart.setOnClickListener(V -> {
+            if (showAllModel != null) {
+                int quantity = Integer.parseInt(detailed_total.getText().toString());
+                CartManager.getInstance().addToCart(showAllModel, quantity);
+
+                Toast.makeText(DetailedActivity.this, "Книга добавлена в корзину", Toast.LENGTH_SHORT).show();
+            } else if (categoryModel != null) {
+                // Обработка для categoryModel, если нужно
             }
         });
     }
