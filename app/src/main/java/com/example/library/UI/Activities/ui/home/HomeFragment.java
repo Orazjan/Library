@@ -124,6 +124,7 @@ public class HomeFragment extends Fragment {
         popular_see_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                popular_see_all.setVisibility(View.GONE);
                 popularBooksList = new ArrayList<>();
                 popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
                 popularBooksRecycleView.setAdapter(popularBooksAdapter);
