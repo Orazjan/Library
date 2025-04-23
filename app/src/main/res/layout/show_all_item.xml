@@ -32,6 +32,7 @@
                 android:id="@+id/item_auuthor"
                 android:layout_width="match_parent"
                 android:layout_height="45sp"
+                android:gravity="center"
                 android:layout_marginTop="5sp"
                 android:layout_marginBottom="10sp"
                 android:text="@string/detailed_author_name"
@@ -42,6 +43,7 @@
                 android:id="@+id/item_name"
                 android:layout_width="match_parent"
                 android:layout_height="45sp"
+                android:gravity="center"
                 android:layout_marginBottom="10sp"
                 android:text="@string/detailed_product_name"
                 android:textSize="18sp" />

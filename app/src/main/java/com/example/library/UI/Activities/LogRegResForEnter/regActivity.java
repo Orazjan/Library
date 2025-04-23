@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -126,8 +125,8 @@ public class regActivity extends AppCompatActivity {
                                     sendVerificationEmail(user);
                                 }
                                 Toast.makeText(regActivity.this, "Регистрация прошла успешно! Пожалуйста, подтвердите вашу почту.", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(regActivity.this, SettingsActivity.class));
                                 progressBar.dismiss();
-                                finish();
                             } else {
                                 String errorMessage = "Ошибка регистрации! Неправильные данные";
                                 if (task.getException() != null) {
