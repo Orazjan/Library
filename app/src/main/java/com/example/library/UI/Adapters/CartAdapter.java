@@ -39,7 +39,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.bookAuthor.setText(item.getBook().getAuthor());
         holder.quantity.setText(String.valueOf(item.getQuantity()));
         holder.price.setText(String.valueOf(item.getBook().getPrice() * item.getQuantity()));
-
         Glide.with(context).load(item.getBook().getImg_url()).into(holder.bookImage);
     }
 
@@ -60,5 +59,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             quantity = itemView.findViewById(R.id.count);
             price = itemView.findViewById(R.id.cartPriceDetail);
         }
+    }
+
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
     }
 }

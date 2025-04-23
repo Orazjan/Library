@@ -1,5 +1,6 @@
 package com.example.library.UI.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,23 +15,22 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.library.Model.Books;
+import com.example.library.Model.CartItem;
 import com.example.library.Model.CategoryModel;
-import com.example.library.Prevalent.CartManager;
 import com.example.library.R;
-import com.example.library.UI.Adapters.CategoryAdapter;
+import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DetailedActivity extends AppCompatActivity {
 
-    ImageView detailed_img;
-    ImageView total_minus, total_plus;
+    ImageView detailed_img, total_minus, total_plus;
     TextView detailed_author, detailed_name, detailed_desc, detailed_price, detailed_total, rating;
     Button add_to_cart, buy_now;
     Books showAllModel = null;
-
+    CartItem item;
     CategoryModel categoryModel = null;
-    CategoryAdapter categoryAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +42,6 @@ public class DetailedActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        FirebaseFirestore fireBaseStone = FirebaseFirestore.getInstance();
 
         final Object obj = getIntent().getSerializableExtra("detailed");
         if (obj instanceof Books) {
@@ -81,6 +79,9 @@ public class DetailedActivity extends AppCompatActivity {
             rating.setText(String.valueOf(showAllModel.getRate()));
         }
 
+        add_to_cart.setOnClickListener(v -> {
+            Toast.makeText(this, "Что-нибудь", Toast.LENGTH_SHORT).show();
+        });
 
         total_plus.setOnClickListener(v -> {
             int total = Integer.parseInt(detailed_total.getText().toString());
@@ -95,16 +96,33 @@ public class DetailedActivity extends AppCompatActivity {
                 detailed_total.setText(String.valueOf(total));
             }
         });
-
-        add_to_cart.setOnClickListener(V -> {
-            if (showAllModel != null) {
-                int quantity = Integer.parseInt(detailed_total.getText().toString());
-                CartManager.getInstance().addToCart(showAllModel, quantity);
-
-                Toast.makeText(DetailedActivity.this, "Книга добавлена в корзину", Toast.LENGTH_SHORT).show();
-            } else if (categoryModel != null) {
-                // Обработка для categoryModel, если нужно
-            }
+        buy_now.setOnClickListener(v -> {
+            Toast.makeText(this, "Здесь должно открываться покупка", Toast.LENGTH_SHORT).show();
         });
     }
+
+    public void addToCart(Books book, int quantity) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            CartItem cartItem = new CartItem(book, quantity);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users")
+                    .document(userId)
+                    .collection("cart")
+                    .add(cartItem) // Автоматический ID документа
+                    .addOnSuccessListener(documentReference -> {
+                        Toast.makeText(this, "Добавлено в корзину", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            // Перенаправить на экран входа
+            startActivity(new Intent(this, loginActivity.class));
+        }
+    }
+
 }
+
