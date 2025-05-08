@@ -5,16 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.library.Prevalent.Prevalent;
 import com.example.library.R;
 import com.example.library.UI.Activities.HomeActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,7 +23,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.example.library.Prevalent.Prevalent;
 
 import io.paperdb.Paper;
 
@@ -35,11 +35,28 @@ public class loginActivity extends AppCompatActivity {
     private ProgressDialog loadingBar;
     private TextView forgetPassword;
     private CheckBox checkBox;
+    private boolean doubleBackToExitPressedOnce = false;
+    private static final int DOUBLE_BACK_PRESS_INTERVAL = 2000;
 
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (doubleBackToExitPressedOnce) {
+                finishAffinity();
+                return;
+            }
+
+            doubleBackToExitPressedOnce = true;
+            Toast.makeText(loginActivity.this, "Нажмите 'Назад' ещё раз для выхода", Toast.LENGTH_SHORT).show();
+
+            new android.os.Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, DOUBLE_BACK_PRESS_INTERVAL);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
         setContentView(R.layout.activity_login);
         auth = FirebaseAuth.getInstance();
         Paper.init(this);
@@ -85,22 +102,24 @@ public class loginActivity extends AppCompatActivity {
                         if (checkBox.isChecked()) {
                             PaperBookWriting(email, password);
                         }
-
-                        startActivity(new Intent(loginActivity.this, HomeActivity.class));
+                        Intent intent = new Intent(loginActivity.this, HomeActivity.class);
+                        intent.putExtra("fromlogin", true);
+                        startActivity(intent);
                         finish();
                     } else {
                         String messageError = task.getException().getMessage();
                         loadingBar.dismiss();
-                        Toast.makeText(loginActivity.this, "Ошибка входа! Не правильные данные", Toast.LENGTH_SHORT).show();
-                        Log.d("Sign in error", "Ошибка при входе" + messageError);
+                        Toast.makeText(loginActivity.this, "Неверные данные", Toast.LENGTH_SHORT).show();
+                        Log.d("Sign in error", "Неверные данные" + messageError);
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(loginActivity.this, "Ошибка входа! Не удалось войти!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(loginActivity.this, "Пользователь не найден", Toast.LENGTH_SHORT).show();
                     loadingBar.dismiss();
                     Log.d("On Login", "onComplete: " + e.getMessage());
+                    startActivity(new Intent(loginActivity.this, regActivity.class));
                 }
             });
         }

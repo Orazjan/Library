@@ -42,7 +42,7 @@ public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHold
             Glide.with(context).load(list.get(position).getImg_url()).into(holder.item_image);
         }
         holder.item_name.setText(list.get(position).getName());
-        holder.item_cost.setText(String.valueOf(list.get(position).getPrice()));
+//        holder.item_cost.setText(String.valueOf(list.get(position).getPrice()));
         holder.item_author.setText(list.get(position).getAuthor());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +75,7 @@ public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHold
             super(itemView);
             item_image = itemView.findViewById(R.id.item_image);
             item_name = itemView.findViewById(R.id.item_name);
-            item_cost = itemView.findViewById(R.id.item_cost);
+//            item_cost = itemView.findViewById(R.id.item_cost);
             item_author = itemView.findViewById(R.id.item_auuthor);
         }
     }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -58,7 +57,9 @@
         android:hint="@string/enter_password"
         android:inputType="textPassword"
         android:padding="20sp"
-        android:textColor="@color/black" />
+        android:textColor="@color/black" >
+
+    </EditText>
 
     <LinearLayout
         android:id="@+id/linear_layout"
@@ -111,8 +112,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10sp"
         android:orientation="horizontal">
-
     </LinearLayout>
-
 
 </RelativeLayout>

@@ -60,7 +60,10 @@ public class SettingsActivity extends AppCompatActivity {
         {
             saveUserDataToFirebase();
             Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
+            // В вашем SettingsActivity при переходе на HomeActivity
+            Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
+            intent.putExtra("fromSettings", true);
+            startActivity(intent);
             finish();
         });
         changeBtn.setOnClickListener(new View.OnClickListener() {
@@ -160,8 +163,6 @@ public class SettingsActivity extends AppCompatActivity {
                                                     Toast.makeText(SettingsActivity.this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
 
                                                 });
-
-
                                     }
                                 } else {
                                     FirebaseUser user = mAuth.getCurrentUser();

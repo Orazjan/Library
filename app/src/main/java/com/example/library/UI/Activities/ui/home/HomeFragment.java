@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
         categoryModelList = new ArrayList<>();
         categoryAdapter = new CategoryAdapter(getContext(), categoryModelList);
         catRecycleView.setAdapter(categoryAdapter);
-        db.collection("Category_name").limit(3).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("Category_name").limit(4).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -151,7 +151,7 @@ public class HomeFragment extends Fragment {
         popularBooksList = new ArrayList<>();
         popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
         popularBooksRecycleView.setAdapter(popularBooksAdapter);
-        db.collection("allBooks").whereEqualTo("rate", 5).limit(3).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("allBooks").whereEqualTo("rate", 5).limit(4).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
