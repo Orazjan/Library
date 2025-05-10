@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private ImageView logoutBtn, settingBtn;
     private boolean doubleBackToExitPressedOnce = false;
-    private static final int DOUBLE_BACK_PRESS_INTERVAL = 2000; // Миллисекунды между нажатиями
+    private static final int DOUBLE_BACK_PRESS_INTERVAL = 2000;
     private ProgressDialog loadingBar;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
