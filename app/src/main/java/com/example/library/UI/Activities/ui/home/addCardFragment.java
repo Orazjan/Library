@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class addCard extends Fragment {
+public class addCardFragment extends Fragment {
 
     private TextInputLayout cardNumberInputLayout;
     private TextInputEditText cardNumberEditText;
@@ -37,7 +37,7 @@ public class addCard extends Fragment {
 
     private FirebaseAuth firebaseAuth;
 
-    public addCard() {
+    public addCardFragment() {
         // Required empty public constructor
     }
 

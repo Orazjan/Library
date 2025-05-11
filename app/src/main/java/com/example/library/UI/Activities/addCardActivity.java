@@ -9,6 +9,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.library.R;
+import com.example.library.UI.Activities.ui.home.addCardFragment;
 
 public class addCardActivity extends AppCompatActivity {
     @Override
@@ -17,7 +18,7 @@ public class addCardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_card);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, new com.example.library.UI.Activities.ui.home.addCard()); // Замените фрагмент в контейнере
+        fragmentTransaction.replace(R.id.fragment_container, new addCardFragment()); // Замените фрагмент в контейнере
         fragmentTransaction.commit();
         boolean openAddCard = getIntent().getBooleanExtra("open_add_card", false);
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -27,7 +29,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +40,7 @@ import java.util.Map;
 public class SettingsActivity extends AppCompatActivity {
     private Button saveSettingsTv, changeBtn, connectCart;
     private FirebaseAuth mAuth;
-    private EditText userName, userFam;
+    private EditText userName, userFamily;
     private DatabaseReference databaseReference;
 
     @Override
@@ -55,8 +60,11 @@ public class SettingsActivity extends AppCompatActivity {
         saveSettingsTv = findViewById(R.id.save_settings_tv);
         mAuth = FirebaseAuth.getInstance();
         userName = findViewById(R.id.userName);
-        userFam = findViewById(R.id.userfam);
+        userFamily = findViewById(R.id.userfam);
         connectCart = findViewById(R.id.btnConnectCard);
+
+        settingUsernameAndFam();
+
         saveSettingsTv.setOnClickListener(view ->
         {
             saveUserDataToFirebaseFirestore();
@@ -80,6 +88,37 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void settingUsernameAndFam() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users")
+                    .document(currentUser.getUid()).collection("userInfo").document(currentUser.getEmail())
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                            @Nullable FirebaseFirestoreException error) {
+                            if (error != null) {
+                                Toast.makeText(SettingsActivity.this, "Ошибка загрузки данных: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            if (documentSnapshot != null && documentSnapshot.exists()) {
+                                String username = documentSnapshot.getString("username");
+                                String userFam = documentSnapshot.getString("userFam");
+
+                                userName.setText(username);
+                                userFamily.setText(userFam);
+                                // Используйте username и userFam
+                                Log.d("FirebaseData", "Username (from userInfo): " + username + ", Family (from userInfo): " + userFam);
+                            } else {
+                                Log.d("FirebaseData", "Документ userInfo не существует");
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
@@ -204,7 +243,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void saveUserDataToFirebaseFirestore() {
         String name = userName.getText().toString().trim();
-        String family = userFam.getText().toString().trim();
+        String family = userFamily.getText().toString().trim();
 
         if (!name.isEmpty() && !family.isEmpty()) {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -220,11 +259,11 @@ public class SettingsActivity extends AppCompatActivity {
                 userData.put("userMail", email);
 
                 db.collection("users").document(uid)
-                        .collection("userInfo").add(userData)
+                        .collection("userInfo").document(email).set(userData)
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Данные успешно сохранены в Firestore", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
                             userName.getText().clear();
-                            userFam.getText().clear();
+                            userFamily.getText().clear();
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(this, "Ошибка сохранения данных в Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();

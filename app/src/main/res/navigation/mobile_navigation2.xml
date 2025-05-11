@@ -13,13 +13,8 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.example.library.UI.Activities.ui.gallery.GalleryFragment"
+        android:name="com.example.library.UI.Activities.ui.home.addCardFragment"
         android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/addcardfragment" />
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.library.UI.Activities.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>

@@ -4,13 +4,13 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,14 +25,19 @@ import com.example.library.R;
 import com.example.library.UI.Activities.SettingsActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class regActivity extends AppCompatActivity {
     FirebaseAuth auth;
-    private Button regButton;
-    private EditText userEmail, userPassword;
+    private Button btnReg;
+    private TextInputEditText mailEditText, passwordEditText;
+    private TextInputLayout mailInputLayout, passwordInputLayout;
     private ProgressDialog progressBar;
 
     @Override
@@ -46,70 +51,88 @@ public class regActivity extends AppCompatActivity {
         });
 
         auth = FirebaseAuth.getInstance();
-        regButton = findViewById(R.id.regButton);
-        userPassword = findViewById(R.id.userPassword);
-        userEmail = findViewById(R.id.userEmail);
+        btnReg = findViewById(R.id.btnReg);
+        passwordEditText = findViewById(R.id.passwordEditText);
+        mailEditText = findViewById(R.id.mailEditText);
+        passwordInputLayout = findViewById(R.id.passwordInputLayout);
+        mailInputLayout = findViewById(R.id.mailInputLayout);
         progressBar = new ProgressDialog(this);
 
-        regButton.setOnClickListener(view -> regAccaunt());
+        mailEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                isValidMail(editable.toString());
+            }
+        });
+        passwordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                isValidPassword(editable.toString());
+                updateStatusRegBtn();
+            }
+        });
+
+        btnReg.setOnClickListener(view -> regAccaunt());
     }
 
-    private void sendVerificationEmail(FirebaseUser user) {
-        if (user != null) {
-            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        showConfirmationDialog(user.getEmail());
-                    } else {
-                        Toast.makeText(regActivity.this, "Не удалось отправить письмо для подтверждения.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+    private boolean isValidPassword(String password) {
+        passwordInputLayout.setErrorEnabled(false);
+        if (password.isEmpty()) {
+            passwordInputLayout.setError("Введите пароль");
+            return false;
+        } else if (password.length() < 6) {
+            passwordInputLayout.setError("Длина пароля не может быть меньше 6и");
+            return false;
+        } else if (password.equals("qwerty")) {
+            passwordInputLayout.setError("Серьёзно? qwerty?");
+            passwordEditText.setText("");
+            return false;
         }
+        return true;
     }
 
-    private void showConfirmationDialog(String email) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Подтверждение действия");
+    private boolean isValidMail(String mail) {
+        mailInputLayout.setErrorEnabled(false);
+        if (mail.isEmpty()) {
+            mailInputLayout.setError("Введите почту");
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(mail).matches()) {
+            mailInputLayout.setError("Неправильный формат почты");
+            return false;
+        }
+        return true;
+    }
 
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_email, null);
-        TextView emailTextView = view.findViewById(R.id.textViewEmail);
-        emailTextView.setText(email);
+    private void updateStatusRegBtn() {
+        String mail = Objects.requireNonNull(mailEditText.getText()).toString();
+        String password = Objects.requireNonNull(passwordEditText.getText()).toString();
 
-        builder.setView(view);
-
-        builder.setPositiveButton("Подтвердить", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(regActivity.this, "Подтверждено. Пожалуйста, проверьте вашу почту.", Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-                startActivity(new Intent(regActivity.this, SettingsActivity.class)); // Замените LoginActivity на нужный класс
-                finish();
-            }
-        });
-        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(regActivity.this, "Подтверждение отменено.", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        btnReg.setEnabled(isValidMail(mail) && isValidPassword(password));
     }
 
     private void regAccaunt() {
-        String useremail = userEmail.getText().toString().trim();
-        String userpassword = userPassword.getText().toString();
-
-        if (TextUtils.isEmpty(useremail) || TextUtils.isEmpty(userpassword)) {
-            Toast.makeText(this, "Поле не заполнено!", Toast.LENGTH_SHORT).show();
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(useremail).matches()) {
-            Toast.makeText(this, "Неверный формат электронной почты", Toast.LENGTH_SHORT).show();
-        } else if (userpassword.length() < 6) {
-            Toast.makeText(this, "Пароль должен быть больше 6 символов", Toast.LENGTH_SHORT).show();
-        } else if (useremail.equals("qwerty")) {
-            Toast.makeText(this, "Выберите более надёжный пароль", Toast.LENGTH_SHORT).show();
-        } else {
+        String useremail = Objects.requireNonNull(mailEditText.getText()).toString().trim();
+        String userpassword = Objects.requireNonNull(passwordEditText.getText()).toString();
             progressBar.setTitle("Создание аккаунта");
             progressBar.setMessage("Пожалуйста подождите...");
             progressBar.setCanceledOnTouchOutside(false);
@@ -124,7 +147,7 @@ public class regActivity extends AppCompatActivity {
                                 if (user != null) {
                                     sendVerificationEmail(user);
                                 }
-                                Toast.makeText(regActivity.this, "Регистрация прошла успешно! Пожалуйста, подтвердите вашу почту.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(regActivity.this, "Регистрация прошла успешно!", Toast.LENGTH_LONG).show();
                                 startActivity(new Intent(regActivity.this, SettingsActivity.class));
                                 progressBar.dismiss();
                             } else {
@@ -143,6 +166,48 @@ public class regActivity extends AppCompatActivity {
                         progressBar.dismiss();
                         Log.d("On Registration", "onComplete: " + e.getMessage());
                     });
+    }
+
+    private void sendVerificationEmail(FirebaseUser user) {
+        if (user != null) {
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(regActivity.this, "Письмо для подтверждения отправлено на " + user.getEmail(), Toast.LENGTH_LONG).show();
+                        showConfirmationDialog(user.getEmail());
+                    } else {
+                        Toast.makeText(regActivity.this, "Не удалось отправить письмо для подтверждения.", Toast.LENGTH_SHORT).show();
+                        Log.e("Email Verification", "Send failed.", task.getException());
+                    }
+                }
+            });
         }
+    }
+
+    private void showConfirmationDialog(String email) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Подтверждение действия");
+
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_email, null);
+        TextView emailTextView = view.findViewById(R.id.textViewEmail);
+        emailTextView.setText(email);
+
+        builder.setView(view);
+
+        builder.setPositiveButton("Подтвердить", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Toast.makeText(regActivity.this, "Подтверждено. Пожалуйста, проверьте вашу почту и перейдите по ссылке.", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Toast.makeText(regActivity.this, "Подтверждение отменено.", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

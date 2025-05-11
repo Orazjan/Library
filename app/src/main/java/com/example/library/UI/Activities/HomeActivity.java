@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -28,11 +29,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import io.paperdb.Paper;
 
@@ -46,7 +47,6 @@ public class HomeActivity extends AppCompatActivity {
     private static final int DOUBLE_BACK_PRESS_INTERVAL = 2000;
     private ProgressDialog loadingBar;
     private FirebaseAuth auth;
-    private DatabaseReference databaseReference;
 
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
@@ -71,16 +71,15 @@ public class HomeActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         Paper.init(this);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("user");
         FirebaseUser currentUser = auth.getCurrentUser();
 
         if (getIntent().getBooleanExtra("fromSettings", false)) {
             if (currentUser != null) {
-                fetchUsername(currentUser.getUid());
+                fetchUsername(currentUser.getUid(), currentUser.getEmail());
             }
         } else if (getIntent().getBooleanExtra("fromlogin", false)) {
             if (currentUser != null) {
-                fetchUsername(currentUser.getUid());
+                fetchUsername(currentUser.getUid(), currentUser.getEmail());
             }
         } else {
             PaperRead();
@@ -93,8 +92,7 @@ public class HomeActivity extends AppCompatActivity {
         DrawerLayout drawer = binding.drawerLayout;
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home,
-                R.id.nav_gallery,
-                R.id.nav_slideshow)
+                R.id.nav_gallery)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -112,13 +110,12 @@ public class HomeActivity extends AppCompatActivity {
         logoutBtn.setOnClickListener(v -> {
             Paper.init(this);
             Paper.book().destroy();
-            startActivity(new Intent(HomeActivity.this, loginActivity.class));
+            startActivity(new Intent(HomeActivity.this, MainActivity.class));
             finish();
         });
 
         settingBtn.setOnClickListener(view -> {
             startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
-            finish();
         });
 
         fab.setOnClickListener(V -> {
@@ -142,13 +139,8 @@ public class HomeActivity extends AppCompatActivity {
         String userEmailKeyFromPaper = Paper.book().read(Prevalent.UserEmailKey);
         String userPasswordKeyFromPaper = Paper.book().read(Prevalent.UserPassword);
 
-        loadingBar.setTitle("Автовход в приложение");
-        loadingBar.setMessage("Пожалуйста, подождите...");
-        loadingBar.setCanceledOnTouchOutside(false);
-
         if (userEmailKeyFromPaper != null && userPasswordKeyFromPaper != null) {
             if (!TextUtils.isEmpty(userEmailKeyFromPaper) && !TextUtils.isEmpty(userPasswordKeyFromPaper)) {
-                loadingBar.show();
                 auth.signInWithEmailAndPassword(userEmailKeyFromPaper, userPasswordKeyFromPaper)
                         .addOnCompleteListener(HomeActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -157,7 +149,7 @@ public class HomeActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     FirebaseUser user = auth.getCurrentUser();
                                     if (user != null) {
-                                        fetchUsername(user.getUid());
+                                        fetchUsername(user.getUid(), user.getEmail());
                                     }
                                 } else {
                                     Toast.makeText(HomeActivity.this, "Ошибка автовхода!", Toast.LENGTH_SHORT).show();
@@ -182,28 +174,25 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             Log.i("PaperRead", "Данные email или пароля не найдены в Paper.");
             Toast.makeText(HomeActivity.this, "Автоматический вход невозможен. Проверьте свои данные.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(HomeActivity.this, loginActivity.class));
+            startActivity(new Intent(HomeActivity.this, MainActivity.class));
         }
     }
 
-    private void fetchUsername(String uid) {
-        DatabaseReference userRef = databaseReference.child(uid).child("username");
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String username = snapshot.getValue(String.class);
-                    Toast.makeText(HomeActivity.this, username + ", добро пожаловать обратно", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(HomeActivity.this, "Ошибка: имя пользователя не найдено", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(HomeActivity.this, "Ошибка при получении имени пользователя: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("HomeActivity", "Ошибка при чтении имени пользователя", error.toException());
-            }
-        });
+    private void fetchUsername(String uid, String email) {
+        FirebaseFirestore.getInstance().collection("users")
+                .document(uid)
+                .collection("userInfo").document(email).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                        @Nullable FirebaseFirestoreException error) {
+                        if (documentSnapshot != null && documentSnapshot.exists()) {
+                            String username = documentSnapshot.getString("username");
+                            Toast.makeText(HomeActivity.this, username + ", добро пожаловать", Toast.LENGTH_SHORT).show();
+                            Log.d("FirebaseData", "Username (from userInfo): " + username);
+                        } else {
+                            Log.d("FirebaseData", "Документ userInfo не существует");
+                        }
+                    }
+                });
     }
 }
