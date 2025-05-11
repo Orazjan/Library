@@ -44,7 +44,6 @@ public class addCard extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.addcardfragment, container, false);
     }
 
@@ -172,18 +171,15 @@ public class addCard extends Fragment {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
                     String uid = currentUser.getUid();
-
-                    // Получаем экземпляр FirebaseFirestore
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                    // Создаем Map для хранения данных карты
                     Map<String, Object> card = new HashMap<>();
                     card.put("Name and Surname", namefam);
                     card.put("cardNumber", cardNumber);
                     card.put("mm/gg", expiryMonth + "/" + expiryYear);
                     card.put("cvv", cvv);
                     db.collection("users").document(uid)
-                            .collection("cards").add(card) // Используем add() для автоматического создания ID документа
+                            .collection("cards").document(cardNumber).set(card) // Используем add() для автоматического создания ID документа
                             .addOnSuccessListener(documentReference -> {
                                 Toast.makeText(requireContext(), "Карта добавлена", Toast.LENGTH_SHORT).show();
                                 cardNumberEditText.setText("");
