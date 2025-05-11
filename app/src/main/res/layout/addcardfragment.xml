@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
-    tools:context=".UI.Activities.PaymentsActivity">
+    android:padding="28dp"
+    tools:context=".UI.Activities.addCardActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -17,7 +17,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70sp"
         android:orientation="horizontal">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -39,11 +39,14 @@
 
         <ImageView
             android:id="@+id/cardTypeImageView"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center|end"
+            android:paddingStart="5sp"
+            android:paddingEnd="5sp"
+            android:paddingBottom="15sp"
             android:visibility="visible"
-            tools:srcCompat="@drawable/ic_mastercard" />
+            tools:srcCompat="@drawable/ic_visa" />
     </LinearLayout>
 
     <LinearLayout
@@ -58,14 +61,15 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:hint="ММ"
-
-            app:errorEnabled="true">
+            app:errorEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/expiryMonthEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="2" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -77,13 +81,15 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:hint="ГГ"
-            app:errorEnabled="true">
+            app:errorEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/expiryYearEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="4" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -95,23 +101,41 @@
             android:layout_marginTop="8dp"
             android:hint="CVV"
             android:textAlignment="center"
-            app:errorEnabled="true">
+            app:errorEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/cvvEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:inputType="numberPassword"
-                android:maxLength="4" />
+                android:maxLength="3" />
         </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/namefamInputLayout"
+        android:layout_width="302sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+
+        android:hint="Имя и фамилия как на карте"
+        android:textAlignment="center"
+        app:errorEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/namefamEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/payButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5sp"
-        android:text="Оплатить" />
+        android:text="Добавить карту" />
 
 </LinearLayout>

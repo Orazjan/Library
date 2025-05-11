@@ -27,12 +27,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button saveSettingsTv, changeBtn;
+    private Button saveSettingsTv, changeBtn, connectCart;
     private FirebaseAuth mAuth;
     private EditText userName, userFam;
     private DatabaseReference databaseReference;
@@ -42,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settingActivity), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -54,13 +55,12 @@ public class SettingsActivity extends AppCompatActivity {
         saveSettingsTv = findViewById(R.id.save_settings_tv);
         mAuth = FirebaseAuth.getInstance();
         userName = findViewById(R.id.userName);
-        userFam = findViewById(R.id.userFam);
-
+        userFam = findViewById(R.id.userfam);
+        connectCart = findViewById(R.id.btnConnectCard);
         saveSettingsTv.setOnClickListener(view ->
         {
-            saveUserDataToFirebase();
+            saveUserDataToFirebaseFirestore();
             Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
-            // В вашем SettingsActivity при переходе на HomeActivity
             Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
             intent.putExtra("fromSettings", true);
             startActivity(intent);
@@ -70,6 +70,14 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showChangeEmailDialog();
+            }
+        });
+        connectCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SettingsActivity.this, addCardActivity.class);
+                intent.putExtra("open_add_card", true); // Пример флага
+                startActivity(intent);
             }
         });
     }
@@ -194,30 +202,32 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserDataToFirebase() {
+    private void saveUserDataToFirebaseFirestore() {
         String name = userName.getText().toString().trim();
         String family = userFam.getText().toString().trim();
 
         if (!name.isEmpty() && !family.isEmpty()) {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null) {
-                String email = currentUser.getEmail();
                 String uid = currentUser.getUid();
-                DatabaseReference userRef = databaseReference.child(uid);
+                String email = currentUser.getEmail();
 
-                Map<String, String> userData = new HashMap<>();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                Map<String, Object> userData = new HashMap<>();
                 userData.put("username", name);
                 userData.put("userFam", family);
                 userData.put("userMail", email);
 
-                userRef.setValue(userData)
+                db.collection("users").document(uid)
+                        .collection("userInfo").add(userData)
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Данные успешно сохранены в Firestore", Toast.LENGTH_SHORT).show();
                             userName.getText().clear();
                             userFam.getText().clear();
                         })
                         .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Ошибка сохранения данных: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Ошибка сохранения данных в Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
             } else {
                 Toast.makeText(this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
