@@ -126,7 +126,7 @@ public class regActivity extends AppCompatActivity {
     private void updateStatusRegBtn() {
         String mail = Objects.requireNonNull(mailEditText.getText()).toString();
         String password = Objects.requireNonNull(passwordEditText.getText()).toString();
-
+        btnReg.setBackgroundColor(getResources().getColor(R.color.black));
         btnReg.setEnabled(isValidMail(mail) && isValidPassword(password));
     }
 

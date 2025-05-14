@@ -8,10 +8,37 @@
     android:background="@drawable/fon"
     tools:context=".UI.Activities.LogRegResForEnter.loginActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Library.AppBarOverlay"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/Theme.Library.NoActionBar">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Вход"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="italic|bold"
+
+                />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <ImageView
         android:id="@+id/logo"
         android:layout_width="162dp"
         android:layout_height="256dp"
+        android:layout_marginTop="50sp"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="150sp"
         android:layout_marginRight="150sp"
@@ -25,12 +52,12 @@
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
         android:text="@string/app_name"
-        android:textColor="@color/forText"
+        android:textColor="@color/black"
         android:textSize="40sp"
         android:textStyle="italic|bold" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/appName"
         android:layout_centerInParent="true"
@@ -60,7 +87,6 @@
             android:hint="@string/enter_password"
             app:errorEnabled="true">
 
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordEditText"
                 android:layout_width="300sp"
@@ -73,29 +99,27 @@
 
         <LinearLayout
             android:id="@+id/linear_layout"
-            android:layout_width="380sp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15sp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/checkBoxBlvme"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15sp"
+                android:layout_weight="1"
                 android:alpha="0.5"
-                android:textColorHint="@color/black"
                 android:text="@string/believe_me" />
 
             <TextView
                 android:id="@+id/forgetPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="70sp"
-                android:textColorHint="@color/black"
+                android:alpha="0.4"
                 android:hint="@string/forget_password"
-                android:textSize="17sp"
-
+                android:textColorHint="@color/black"
+                android:textSize="15sp"
                 />
 
         </LinearLayout>

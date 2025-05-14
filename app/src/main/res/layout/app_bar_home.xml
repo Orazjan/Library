@@ -17,7 +17,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/colorPrimaryDark"
             app:popupTheme="@style/Theme.Library.PopupOverlay">
 
             <ImageView
@@ -39,8 +39,17 @@
                 android:layout_width="35sp"
                 android:layout_height="35sp"
                 android:layout_gravity="end"
+                android:visibility="gone"
                 android:layout_marginEnd="15sp"
                 android:src="@drawable/settings" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="35sp"
+                android:layout_height="35sp"
+                android:layout_gravity="end"
+                android:progressTint="@color/black"
+                android:visibility="gone" />
 
         </androidx.appcompat.widget.Toolbar>
 

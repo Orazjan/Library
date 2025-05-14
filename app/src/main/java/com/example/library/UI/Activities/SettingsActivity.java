@@ -23,6 +23,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.library.R;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,20 +34,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
     private Button saveSettingsTv, changeBtn, connectCart;
     private FirebaseAuth mAuth;
-    private EditText userName, userFamily;
+    private TextInputEditText userName, userFamily;
+    private TextInputLayout textuserName, textuserfam;
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +61,8 @@ public class SettingsActivity extends AppCompatActivity {
         userFamily = findViewById(R.id.userfam);
         connectCart = findViewById(R.id.btnConnectCard);
 
+        checkStatusOfBtn(false);
+        validNamAndFam();
         settingUsernameAndFam();
 
         saveSettingsTv.setOnClickListener(view ->
@@ -77,21 +75,46 @@ public class SettingsActivity extends AppCompatActivity {
             finish();
         });
 
-        changeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showChangeEmailDialog();
-            }
+        changeBtn.setOnClickListener(View -> {
+            showChangeEmailDialog();
         });
 
-        connectCart.setOnClickListener(new View.OnClickListener() {
+        connectCart.setOnClickListener(View -> {
+            Intent intent = new Intent(SettingsActivity.this, addCardActivity.class);
+            intent.putExtra("open_add_card", true);
+            startActivity(intent);
+        });
+    }
+
+    private void validNamAndFam() {
+        userFamily.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SettingsActivity.this, addCardActivity.class);
-                intent.putExtra("open_add_card", true); // Пример флага
-                startActivity(intent);
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!Objects.requireNonNull(userName.getText()).toString().isEmpty() && !editable.toString().isEmpty()) {
+                    checkStatusOfBtn(true);
+                }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("fromSettings", true);
+        startActivity(intent);
+        finish();
     }
 
     private void saveUserDataToFirebaseFirestore() {
@@ -99,9 +122,9 @@ public class SettingsActivity extends AppCompatActivity {
         String family = userFamily.getText().toString().trim();
 
         if (!name.isEmpty() && !family.isEmpty()) {
-            saveSettingsTv.setEnabled(true);
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null) {
+                checkStatusOfBtn(true);
                 String uid = currentUser.getUid();
                 String email = currentUser.getEmail();
 
@@ -132,6 +155,10 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    private void checkStatusOfBtn(boolean status) {
+        saveSettingsTv.setEnabled(status);
+    }
+
     private void settingUsernameAndFam() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -150,11 +177,12 @@ public class SettingsActivity extends AppCompatActivity {
                             if (documentSnapshot != null && documentSnapshot.exists()) {
                                 String username = documentSnapshot.getString("username");
                                 String userFam = documentSnapshot.getString("userFam");
-
                                 userName.setText(username);
                                 userFamily.setText(userFam);
+                                checkStatusOfBtn(true);
                                 Log.d("FirebaseData", "Username (from userInfo): " + username + ", Family (from userInfo): " + userFam);
                             } else {
+                                checkStatusOfBtn(false);
                                 Log.d("FirebaseData", "Документ userInfo не существует");
                             }
                         }

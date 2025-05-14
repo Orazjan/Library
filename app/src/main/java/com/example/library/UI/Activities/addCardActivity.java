@@ -18,7 +18,7 @@ public class addCardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_card);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, new addCardFragment()); // Замените фрагмент в контейнере
+        fragmentTransaction.replace(R.id.fragment_container, new addCardFragment());
         fragmentTransaction.commit();
         boolean openAddCard = getIntent().getBooleanExtra("open_add_card", false);
 
@@ -26,7 +26,7 @@ public class addCardActivity extends AppCompatActivity {
             NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             if (navHostFragment != null) {
                 NavController navController = navHostFragment.getNavController();
-                navController.navigate(R.id.fragment_container); // R.id.addCardFragment - ID вашего фрагмента в nav_graph
+                navController.navigate(R.id.fragment_container);
             }
         }
     }

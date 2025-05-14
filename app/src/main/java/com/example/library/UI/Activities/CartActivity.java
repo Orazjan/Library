@@ -66,18 +66,15 @@ public class CartActivity extends AppCompatActivity {
 
                         if (value != null) {
                             cartItems.clear();
-                            int totalPrice = 0;
 
                             for (DocumentSnapshot doc : value.getDocuments()) {
                                 CartItem item = doc.toObject(CartItem.class);
                                 if (item != null) {
                                     item.setDocumentId(doc.getId());
                                     cartItems.add(item);
-                                    totalPrice += item.getBook().getPrice() * item.getQuantity();
                                 }
                             }
 
-                            // Обновляем адаптер и общую сумму
                             adapter.setCartItems(cartItems);
                             adapter.notifyDataSetChanged();
                             updateTotalPrice();
