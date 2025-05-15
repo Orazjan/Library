@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -49,6 +51,7 @@ public class PayActivity extends AppCompatActivity {
     private RelativeLayout getInfoHome;
     private String cardNumber;
     private boolean methodSelected, cardSelected = false;
+    private ProgressBar progressBar;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
@@ -77,10 +80,12 @@ public class PayActivity extends AppCompatActivity {
         homeEditText = findViewById(R.id.homeEditText);
         saveData = findViewById(R.id.btnSaveData);
         pay = findViewById(R.id.btnPay);
+        progressBar = findViewById(R.id.progressBar);
         cardNumbersList = new ArrayList<>();
         getList = new ArrayList<>();
         saveData.setEnabled(false);
         pay.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
         paySum();
         getCards();
         getMethods();
@@ -224,6 +229,7 @@ public class PayActivity extends AppCompatActivity {
 
         pay.setOnClickListener(view -> {
             Toast.makeText(this, "Спасибо за покупку!", Toast.LENGTH_SHORT).show();
+            processPaymentAndClearCart();
             startActivity(new Intent(PayActivity.this, HomeActivity.class));
             finish();
         });
@@ -321,6 +327,8 @@ public class PayActivity extends AppCompatActivity {
             getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             myGetSpinner.setAdapter(getAdapter);
         }
+        progressBar.setVisibility(View.INVISIBLE);
+
     }
 
     private void getCards() {
@@ -422,4 +430,36 @@ public class PayActivity extends AppCompatActivity {
             });
         }
     }
+
+    // В PayActivity
+    private void processPaymentAndClearCart() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(user.getUid()).collection("cart").get() // Получаем все элементы корзины
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // Для каждого элемента в корзине удаляем соответствующий документ
+                                db.collection("users").document(user.getUid()).collection("cart").document(document.getId()) // Используем ID документа корзины (который является ID книги)
+                                        .delete().addOnSuccessListener(aVoid -> {
+                                            Log.d("PayActivity", "Книга удалена из корзины: " + document.getId());
+                                            // Можно добавить здесь дополнительную логику после удаления каждой книги
+                                        }).addOnFailureListener(e -> {
+                                            Log.e("PayActivity", "Ошибка удаления книги " + document.getId() + " из корзины: " + e.getMessage());
+                                            Toast.makeText(PayActivity.this, "Ошибка при удалении некоторых товаров из корзины.", Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+                            Toast.makeText(PayActivity.this, "Спасибо за покупку! Корзина очищена.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(PayActivity.this, HomeActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(PayActivity.this, "Ошибка при получении товаров из корзины.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "Пользователь не авторизован.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

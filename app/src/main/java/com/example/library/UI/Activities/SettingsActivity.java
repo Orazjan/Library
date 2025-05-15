@@ -137,7 +137,6 @@ public class SettingsActivity extends AppCompatActivity {
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("username", name);
                 userData.put("userFam", family);
-                userData.put("userMail", email);
 
                 db.collection("users").document(uid)
                         .collection("userInfo").document(email).set(userData)

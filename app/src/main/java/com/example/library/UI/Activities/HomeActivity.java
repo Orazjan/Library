@@ -100,6 +100,10 @@ public class HomeActivity extends AppCompatActivity {
             if (currentUser != null) {
                 fetchUsername(currentUser.getUid(), currentUser.getEmail());
             }
+        } else if (getIntent().getBooleanExtra("fromPayment", false)) {
+            if (currentUser != null) {
+                settingBtn.setVisibility(View.VISIBLE);
+            }
         } else {
             PaperRead();
         }
