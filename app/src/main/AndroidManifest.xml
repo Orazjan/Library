@@ -20,6 +20,9 @@
         android:theme="@style/Theme.Library"
         tools:targetApi="31">
         <activity
+            android:name=".UI.Activities.PayActivity"
+            android:exported="false" />
+        <activity
             android:name=".UI.Activities.addCardActivity"
             android:exported="false" />
         <activity

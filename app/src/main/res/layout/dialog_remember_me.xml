@@ -6,17 +6,9 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/messageTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp" />
 
-    <EditText
-        android:id="@+id/newEmailEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Новый email"
-        android:inputType="textEmailAddress" />
 
 </LinearLayout>

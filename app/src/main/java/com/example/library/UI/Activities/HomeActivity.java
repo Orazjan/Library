@@ -162,7 +162,7 @@ public class HomeActivity extends AppCompatActivity {
                                 loadingBar.setVisibility(View.INVISIBLE);
                                 Log.e("On Login Failure", "Ошибка автовхода: " + e.getMessage());
                                 Toast.makeText(HomeActivity.this, "Ошибка автовхода: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                startActivity(new Intent(HomeActivity.this, loginActivity.class));
+                                startActivity(new Intent(HomeActivity.this, MainActivity.class));
                             }
                         });
             } else {
@@ -186,6 +186,8 @@ public class HomeActivity extends AppCompatActivity {
                                         @Nullable FirebaseFirestoreException error) {
                         if (documentSnapshot != null && documentSnapshot.exists()) {
                             String username = documentSnapshot.getString("username");
+                            settingBtn.setVisibility(View.VISIBLE);
+                            loadingBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(HomeActivity.this, username + ", добро пожаловать", Toast.LENGTH_SHORT).show();
                             Log.d("FirebaseData", "Username (from userInfo): " + username);
                         } else {

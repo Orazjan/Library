@@ -21,6 +21,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.library.Prevalent.Prevalent;
 import com.example.library.R;
 import com.example.library.UI.Activities.SettingsActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +33,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
+
+import io.paperdb.Paper;
 
 public class regActivity extends AppCompatActivity {
     FirebaseAuth auth;
@@ -49,7 +52,7 @@ public class regActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        Paper.init(this);
         auth = FirebaseAuth.getInstance();
         btnReg = findViewById(R.id.btnReg);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -147,7 +150,7 @@ public class regActivity extends AppCompatActivity {
                                 if (user != null) {
                                     sendVerificationEmail(user);
                                 }
-                                Toast.makeText(regActivity.this, "Регистрация прошла успешно!", Toast.LENGTH_LONG).show();
+                                showRememberMeDialog(useremail, userpassword);
                                 startActivity(new Intent(regActivity.this, SettingsActivity.class));
                                 progressBar.dismiss();
                             } else {
@@ -209,5 +212,33 @@ public class regActivity extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void showRememberMeDialog(String username, String password) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Запомнить вас для автовхода?");
+
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_remember_me, null);
+
+        builder.setView(view);
+
+        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                PaperBookWriting(username, password);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void PaperBookWriting(String email, String password) {
+        Paper.book().write(Prevalent.UserEmailKey, email);
+        Paper.book().write(Prevalent.UserPassword, password);
     }
 }

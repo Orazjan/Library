@@ -1,5 +1,6 @@
 package com.example.library.UI.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -46,7 +47,7 @@ public class CartActivity extends AppCompatActivity {
             if (cartItems.isEmpty()) {
                 Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Оформление заказа", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, PayActivity.class));
             }
         });
     }

@@ -60,6 +60,8 @@ public class SettingsActivity extends AppCompatActivity {
         userName = findViewById(R.id.userName);
         userFamily = findViewById(R.id.userfam);
         connectCart = findViewById(R.id.btnConnectCard);
+        textuserName = findViewById(R.id.textuserName);
+        textuserfam = findViewById(R.id.textuserfam);
 
         checkStatusOfBtn(false);
         validNamAndFam();
@@ -102,6 +104,8 @@ public class SettingsActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 if (!Objects.requireNonNull(userName.getText()).toString().isEmpty() && !editable.toString().isEmpty()) {
                     checkStatusOfBtn(true);
+                } else {
+                    userFamily.setError("Поле не может быть пустым");
                 }
             }
         });
@@ -139,8 +143,7 @@ public class SettingsActivity extends AppCompatActivity {
                         .collection("userInfo").document(email).set(userData)
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
-                            userName.getText().clear();
-                            userFamily.getText().clear();
+                            checkStatusOfBtn(true);
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(this, "Ошибка сохранения данных в Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();

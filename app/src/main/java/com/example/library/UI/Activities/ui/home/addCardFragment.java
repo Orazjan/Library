@@ -34,6 +34,7 @@ public class addCardFragment extends Fragment {
     private TextInputEditText expiryYearEditText, cvvEditText, expiryMonthEditText, namefamEditText;
     private Button payButton;
     private ImageView cardTypeImageView;
+    private String cardType;
 
     private FirebaseAuth firebaseAuth;
 
@@ -78,11 +79,11 @@ public class addCardFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 String cardNumber = s.toString().replaceAll("\\s+", "");
-                String cardType = getCardTypeByPrefix(cardNumber);
+                cardType = getCardTypeByPrefix(cardNumber);
                 cardTypeImageView.setVisibility(View.VISIBLE);
-                if (cardType.equals("visa")) {
+                if (cardType.equals("Visa")) {
                     cardTypeImageView.setImageResource(R.drawable.ic_visa);
-                } else if (cardType.equals("mastercard")) {
+                } else if (cardType.equals("Mastercard")) {
                     cardTypeImageView.setImageResource(R.drawable.ic_mastercard);
                 } else {
                     cardTypeImageView.setVisibility(View.GONE);
@@ -176,6 +177,7 @@ public class addCardFragment extends Fragment {
                     Map<String, Object> card = new HashMap<>();
                     card.put("Name and Surname", namefam);
                     card.put("cardNumber", cardNumber);
+                    card.put("cardType", cardType);
                     card.put("mm/gg", expiryMonth + "/" + expiryYear);
                     card.put("cvv", cvv);
                     db.collection("users").document(uid)
@@ -205,9 +207,9 @@ public class addCardFragment extends Fragment {
 
     private String getCardTypeByPrefix(String cardNumber) {
         if (cardNumber.startsWith("4")) {
-            return "visa";
+            return "Visa";
         } else if (cardNumber.startsWith("5")) {
-            return "mastercard";
+            return "Mastercard";
         }
         return "";
     }
