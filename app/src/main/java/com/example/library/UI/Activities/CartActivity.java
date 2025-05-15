@@ -27,6 +27,7 @@ public class CartActivity extends AppCompatActivity {
     private Button btnBuy;
     private TextView totalPriceView;
     private List<CartItem> cartItems = new ArrayList<>();
+    int total = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,10 @@ public class CartActivity extends AppCompatActivity {
             if (cartItems.isEmpty()) {
                 Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
             } else {
-                startActivity(new Intent(this, PayActivity.class));
+                Intent intent = new Intent(this, PayActivity.class);
+                int totalPrice = total; // Получите рассчитанную сумму
+                intent.putExtra("totalPrice", totalPrice);
+                startActivity(intent);
             }
         });
     }
@@ -69,9 +73,11 @@ public class CartActivity extends AppCompatActivity {
                             cartItems.clear();
 
                             for (DocumentSnapshot doc : value.getDocuments()) {
+                                // ID документа теперь является ID книги
+                                String bookId = doc.getId();
                                 CartItem item = doc.toObject(CartItem.class);
                                 if (item != null) {
-                                    item.setDocumentId(doc.getId());
+                                    item.setDocumentId(bookId); // Устанавливаем ID документа (который является ID книги)
                                     cartItems.add(item);
                                 }
                             }
@@ -89,7 +95,7 @@ public class CartActivity extends AppCompatActivity {
 
     public void updateTotalPrice() {
         runOnUiThread(() -> {
-            int total = 0;
+
             for (CartItem item : cartItems) {
                 total += item.getBook().getPrice() * item.getQuantity();
             }

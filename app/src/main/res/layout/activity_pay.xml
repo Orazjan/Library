@@ -64,6 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10sp"
+            android:prompt="@string/select_card_prompt"
             android:background="@drawable/spinner_background" />
 
     </LinearLayout>
@@ -95,6 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10sp"
+            android:prompt="@string/select_option_prompt"
             android:background="@drawable/spinner_background" />
     </LinearLayout>
 

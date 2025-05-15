@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.library.R;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,6 +52,8 @@ public class addCardFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        fragmentManager.popBackStack();
 
         cardNumberInputLayout = view.findViewById(R.id.cardNumberInputLayout);
         cardNumberEditText = view.findViewById(R.id.cardNumberEditText);

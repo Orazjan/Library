@@ -12,6 +12,9 @@
     <string name="enter_name">Введите имя</string>
     <string name="enter_fami">Введите фамилию</string>
 
+    <string name="select_card_prompt">Выберите карту</string>
+    <string name="select_option_prompt">Выберите вариант</string>
+
     <string name="title_activity_home">HomeActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

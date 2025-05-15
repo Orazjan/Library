@@ -27,6 +27,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -47,6 +48,7 @@ public class PayActivity extends AppCompatActivity {
     private Button saveData, pay;
     private RelativeLayout getInfoHome;
     private String cardNumber;
+    private boolean methodSelected, cardSelected = false;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
@@ -79,14 +81,21 @@ public class PayActivity extends AppCompatActivity {
         getList = new ArrayList<>();
         saveData.setEnabled(false);
         pay.setEnabled(false);
+        paySum();
         getCards();
         getMethods();
-
 
         myCardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected = parent.getItemAtPosition(position).toString();
+                if (selected.equals("Добавить карту")) {
+                    showDialogForAddingCard();
+                    cardSelected = false;
+                    checkStatusOfBtnPay();
+                }
+                cardSelected = true;
+                checkStatusOfBtnPay();
             }
 
             @Override
@@ -94,31 +103,34 @@ public class PayActivity extends AppCompatActivity {
             }
         });
 
-
         myGetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selected = adapterView.getItemAtPosition(i).toString();
-                if (selected.equals("Выберите вариант получения")) {
-                    getInfoHome.setVisibility(View.GONE);
-                    emailForSend.setVisibility(View.GONE);
-                } else if (selected.equals("Доставка до точки получения")) {
+                if (selected.equals("Добавление адреса")) {
                     getInfoHome.setVisibility(View.VISIBLE);
                     emailForSend.setVisibility(View.INVISIBLE);
-                } else {
+                    methodSelected = false;
+                    checkStatusOfBtnPay();
+                } else if (selected.equals("Электронный вариант")) {
                     emailForSend.setText(currentUser.getEmail());
                     getInfoHome.setVisibility(View.INVISIBLE);
                     emailForSend.setVisibility(View.VISIBLE);
+                    methodSelected = true;
+                    checkStatusOfBtnPay();
+                } else {
+                    methodSelected = true;
+                    getInfoHome.setVisibility(View.INVISIBLE);
+                    emailForSend.setVisibility(View.INVISIBLE);
+                    checkStatusOfBtnPay();
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 getInfoHome.setVisibility(View.GONE);
                 emailForSend.setVisibility(View.GONE);
             }
         });
-
 
         countryEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -188,7 +200,6 @@ public class PayActivity extends AppCompatActivity {
                 checkStatusOfBtnSave();
             }
         });
-
         cityEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -206,13 +217,23 @@ public class PayActivity extends AppCompatActivity {
                 checkStatusOfBtnSave();
             }
         });
+
         saveData.setOnClickListener(View -> {
             addDataToFireBase();
         });
 
         pay.setOnClickListener(view -> {
-            Toast.makeText(this, "Оплата скоро пройдёт", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Спасибо за покупку!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(PayActivity.this, HomeActivity.class));
+            finish();
         });
+    }
+
+    private void paySum() {
+        if (currentUser != null) {
+            int totalPrice = getIntent().getIntExtra("totalPrice", 0);
+            pay.setText("Оплатить " + totalPrice + " сом");
+        }
     }
 
     private boolean isValidateCity(String string) {
@@ -266,18 +287,44 @@ public class PayActivity extends AppCompatActivity {
     }
 
     private void getMethods() {
-        getList.add("Выберите вариант получения");
-        getList.add("Электронный вариант");
-        getList.add("Доставка до точки получения");
+        getList.clear();
+        getAdapter = null;
 
-        getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
-        getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        myGetSpinner.setAdapter(getAdapter);
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("userInfo").document("adress").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+                        String street = document.getString("street");
+                        String house = document.getString("house");
+                        String home = document.getString("home");
+                        if (street != null && house != null && home != null) {
+                            getList.add(street + " " + house + " кв " + home);
+                        }
+                    }
+                    getList.add("Электронный вариант");
+                    getList.add("Добавление адреса");
+                    getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
+                    getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    myGetSpinner.setAdapter(getAdapter);
+                } else {
+                    getList.add("Электронный вариант");
+                    getList.add("Добавление адреса");
+                    Toast.makeText(PayActivity.this, "Ошибка загрузки данных: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
+                    getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    myGetSpinner.setAdapter(getAdapter);
+                }
+            });
+        } else {
+            getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
+            getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            myGetSpinner.setAdapter(getAdapter);
+        }
     }
 
     private void getCards() {
         cardNumbersList.clear();
-        cardNumbersList.add("Выбрите карту");
         adapter = null;
 
         if (currentUser != null) {
@@ -300,6 +347,7 @@ public class PayActivity extends AppCompatActivity {
                     }
 
                     if (hasCards) {
+                        cardNumbersList.add("Добавить карту");
                         adapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, cardNumbersList);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         myCardSpinner.setAdapter(adapter);
@@ -320,7 +368,7 @@ public class PayActivity extends AppCompatActivity {
 
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_adding_card, null);
         TextView message = view.findViewById(R.id.messageTextView);
-        message.setText("Вы не имеете активных карт. Хотите добавить карту?");
+        message.setText("Хотите добавить карту?");
 
         builder.setView(view);
         builder.setPositiveButton("Добавить карту", new DialogInterface.OnClickListener() {
@@ -349,13 +397,7 @@ public class PayActivity extends AppCompatActivity {
     }
 
     private void checkStatusOfBtnPay() {
-        myCardSpinner.getSelectedItem();
-        myGetSpinner.getSelectedItem();
-        if (myCardSpinner.getSelectedItem().equals(cardNumber) && myGetSpinner.getSelectedItem().toString().equals("Выберите вариант получения") || myGetSpinner.getSelectedItem().equals(currentUser.getEmail())) {
-            pay.setEnabled(false);
-        } else {
-            pay.setEnabled(true);
-        }
+        pay.setEnabled(cardSelected && methodSelected);
     }
 
     private void addDataToFireBase() {
