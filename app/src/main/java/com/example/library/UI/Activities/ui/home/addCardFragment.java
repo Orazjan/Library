@@ -183,8 +183,7 @@ public class addCardFragment extends Fragment {
                     card.put("cardType", cardType);
                     card.put("mm/gg", expiryMonth + "/" + expiryYear);
                     card.put("cvv", cvv);
-                    db.collection("users").document(uid)
-                            .collection("cards").document(cardNumber).set(card) // Используем add() для автоматического создания ID документа
+                    db.collection("users").document(uid).collection("cards").document(cardNumber).set(card)
                             .addOnSuccessListener(documentReference -> {
                                 Toast.makeText(requireContext(), "Карта добавлена", Toast.LENGTH_SHORT).show();
                                 cardNumberEditText.setText("");
@@ -272,7 +271,16 @@ public class addCardFragment extends Fragment {
     }
 
     private boolean isValidCvv(String cvv) {
-        return cvv.length() == 3; // Пример
+        if (cvv.isEmpty()) {
+            cvvInputLayout.setError("Введите CVV");
+            return false;
+        } else if (cvv.length() < 3) {
+            cvvInputLayout.setError("CVV должно быть 3 символа");
+            return false;
+        }
+        cvvInputLayout.setError(null);
+        return true;
+
     }
 
     private void updatePayButtonState() {

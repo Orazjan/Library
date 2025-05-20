@@ -50,7 +50,8 @@
     <string name="card_connect">Привязать карту</string>
     <string name="card_delete">Удалить карту</string>
     <string name="change_mail">Изменить почту</string>
-    <string name="change_adress">Изменить адрес</string>
+    <string name="delete_adress">Удалить адрес</string>
+    <string name="add_adress">Добавить адрес</string>
     <string name="save">Сохранить</string>
     <string name="card_data">Введите данные карты</string>
 

@@ -36,8 +36,9 @@
     <ImageView
         android:id="@+id/logo"
         android:layout_width="162dp"
-        android:layout_height="256dp"
+        android:layout_height="120dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="80sp"
         android:layout_marginLeft="150sp"
         android:layout_marginRight="150sp"
         android:src="@drawable/logo" />
@@ -49,6 +50,7 @@
         android:layout_below="@+id/logo"
         android:layout_centerInParent="true"
         android:orientation="vertical">
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textuserName"
         android:layout_width="wrap_content"
@@ -85,12 +87,59 @@
     </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/getInfoHome"
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear_layout"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10sp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@id/linear_layout_get"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20sp"
+            android:layout_marginEnd="20sp"
+            android:background="@drawable/linear_layout_border"
+            android:orientation="vertical"
+            android:padding="10sp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/textViewTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Выберите адрес"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Spinner
+                android:id="@+id/mySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:background="@drawable/spinner_background"
+                android:prompt="@string/select_option_prompt" />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/addressFormLayout"
+            layout="@layout/item_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/linear_layout"
+        android:layout_below="@+id/getInfoHome"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15sp"
+        android:layout_marginTop="5sp"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingStart="30sp"
@@ -105,14 +154,15 @@
                 android:id="@+id/btnDeleteCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10sp"
                 android:layout_marginEnd="20sp"
+                android:layout_weight="1"
                 android:text="@string/card_delete" />
 
             <Button
                 android:id="@+id/btnConnectCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:text="@string/card_connect" />
         </LinearLayout>
 
@@ -126,17 +176,27 @@
                 android:id="@+id/btnDeleteGetPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10sp"
+                android:layout_weight="1"
                 android:layout_marginEnd="10sp"
-                android:text="@string/change_mail" />
+                android:text="@string/delete_adress" />
 
             <Button
-                android:id="@+id/btnChangeEmail"
+                android:id="@+id/btnAddGetPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:text="@string/change_adress" />
+                android:layout_marginStart="10sp"
+                android:layout_weight="2"
+                android:text="@string/add_adress" />
+
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnChangeEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5sp"
+            android:text="@string/change_mail" />
 
         <Button
             android:id="@+id/save_settings_tv"

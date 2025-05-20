@@ -1,5 +1,8 @@
 package com.example.library.UI.Activities;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,8 +12,12 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,16 +38,26 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button saveSettingsTv, changeBtn, connectCart;
+    private Button saveSettingsTv, changeBtn, connectCart, deleteCardbtn, deleteGetPointbtn, addGetPointbtn;
     private FirebaseAuth mAuth;
     private TextInputEditText userName, userFamily;
     private TextInputLayout textuserName, textuserfam;
+    private RelativeLayout addressFormLayout, getInfoHome;
+    private Spinner mySpinner;
+    private ArrayList<String> cardList;
+    private ArrayAdapter<String> adapter;
+    private LinearLayout linear_layout_get;
+    private TextView textViewTop;
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +78,20 @@ public class SettingsActivity extends AppCompatActivity {
         connectCart = findViewById(R.id.btnConnectCard);
         textuserName = findViewById(R.id.textuserName);
         textuserfam = findViewById(R.id.textuserfam);
+        deleteCardbtn = findViewById(R.id.btnDeleteCard);
+        deleteGetPointbtn = findViewById(R.id.btnDeleteGetPoint);
+        addGetPointbtn = findViewById(R.id.btnAddGetPoint);
+        getInfoHome = findViewById(R.id.getInfoHome);
+        addressFormLayout = findViewById(R.id.addressFormLayout);
+        mySpinner = findViewById(R.id.mySpinner);
+        linear_layout_get = findViewById(R.id.linear_layout_get);
+        cardList = new ArrayList<>();
+        textViewTop = findViewById(R.id.textViewTop);
 
         saveSettingsTv.setEnabled(false);
-
         setupTextWatchers();
-
         settingUsernameAndFam();
+
         saveSettingsTv.setOnClickListener(view -> {
             if (checkFormValidity()) {
                 saveUserDataToFirebaseFirestore();
@@ -88,6 +113,21 @@ public class SettingsActivity extends AppCompatActivity {
             Intent intent = new Intent(SettingsActivity.this, addCardActivity.class);
             intent.putExtra("open_add_card", true);
             startActivity(intent);
+        });
+
+        addGetPointbtn.setOnClickListener(View -> {
+            linear_layout_get.setVisibility(INVISIBLE);
+            addressFormLayout.setVisibility(VISIBLE);
+        });
+        deleteCardbtn.setOnClickListener(View -> {
+            addressFormLayout.setVisibility(INVISIBLE);
+            linear_layout_get.setVisibility(VISIBLE);
+            getCards();
+        });
+        deleteGetPointbtn.setOnClickListener(View -> {
+            addressFormLayout.setVisibility(INVISIBLE);
+            linear_layout_get.setVisibility(VISIBLE);
+            getMethods();
         });
     }
 
@@ -178,7 +218,6 @@ public class SettingsActivity extends AppCompatActivity {
         String family = Objects.requireNonNull(userFamily.getText()).toString().trim();
 
         if (!name.isEmpty() && !family.isEmpty()) {
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null) {
                 String uid = currentUser.getUid();
                 String email = currentUser.getEmail();
@@ -315,5 +354,71 @@ public class SettingsActivity extends AppCompatActivity {
                 Toast.makeText(SettingsActivity.this, "Пользователь не авторизован.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getMethods() {
+        textViewTop.setText("Выберите адрес");
+        cardList.clear();
+        adapter = null;
+
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("adress").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    QuerySnapshot document = task.getResult();
+                    if (document != null && !document.isEmpty()) {
+                        for (DocumentSnapshot doc : document) {
+                            String street = doc.getString("street");
+                            String house = doc.getString("house");
+                            String home = doc.getString("home");
+                            if (street != null && house != null && home != null) {
+                                cardList.add(street + " " + house + " кв " + home);
+                            }
+                        }
+                    }
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    mySpinner.setAdapter(adapter);
+                }
+            });
+        } else {
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mySpinner.setAdapter(adapter);
+        }
+    }
+
+    private void getCards() {
+        textViewTop.setText("Выберите карту");
+        cardList.clear();
+        adapter = null;
+
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("cards").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    boolean hasCards = false;
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String cardNumber = document.getString("cardNumber");
+                        String cardType = document.getString("cardType");
+                        if (cardType == null) {
+                            cardType = " ";
+                        }
+
+                        if (cardNumber != null) {
+                            cardList.add(cardNumber + " " + cardType);
+                            hasCards = true;
+                        }
+                    }
+
+                    if (hasCards) {
+                        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        mySpinner.setAdapter(adapter);
+                    }
+
+                } else {
+                    Toast.makeText(this, "Ошибка загрузки данных: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

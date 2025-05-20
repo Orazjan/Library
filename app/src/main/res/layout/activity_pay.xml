@@ -123,109 +123,20 @@
         android:id="@+id/getInfoHome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10sp"
         android:layout_marginTop="10sp"
-        android:layout_marginEnd="15sp"
-        android:padding="10sp"
-        android:visibility="visible"
+        android:paddingStart="9sp"
+        android:paddingEnd="9sp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/linear_layout_get">
 
-        <LinearLayout
+        <include
+            android:id="@+id/addressFormLayout"
+            layout="@layout/item_address"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10sp"
-            android:background="@drawable/linear_layout_border"
-            android:orientation="vertical">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/countryInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5sp"
-                android:hint="Страна">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/countryEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/cityInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5sp"
-                android:hint="Город">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/cityEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/streetInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5sp"
-                android:hint="Улица">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/streetEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/houseInputLayout"
-                    android:layout_width="90sp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5sp"
-                    android:layout_marginEnd="15sp"
-                    android:hint="Дом">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/houseEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapCharacters" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/homeInputLayout"
-                    android:layout_width="90sp"
-                    android:layout_height="wrap_content"
-                    android:hint="Кв">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/homeEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:inputType="number" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnSaveData"
-                android:layout_width="wrap_content"
-                android:layout_height="40sp"
-                android:layout_marginTop="10sp"
-                android:layout_gravity="center"
-                android:text="Сохранить данные" />
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </RelativeLayout>
 
     <Button

@@ -1,5 +1,7 @@
 package com.example.library.UI.Activities;
 
+import static android.view.View.INVISIBLE;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,19 +117,19 @@ public class PayActivity extends AppCompatActivity {
                 String selected = adapterView.getItemAtPosition(i).toString();
                 if (selected.equals("Добавление адреса")) {
                     getInfoHome.setVisibility(View.VISIBLE);
-                    emailForSend.setVisibility(View.INVISIBLE);
+                    emailForSend.setVisibility(INVISIBLE);
                     methodSelected = false;
                     checkStatusOfBtnPay();
                 } else if (selected.equals("Электронный вариант")) {
+                    getInfoHome.setVisibility(INVISIBLE);
                     emailForSend.setText(currentUser.getEmail());
-                    getInfoHome.setVisibility(View.INVISIBLE);
                     emailForSend.setVisibility(View.VISIBLE);
                     methodSelected = true;
                     checkStatusOfBtnPay();
                 } else {
                     methodSelected = true;
-                    getInfoHome.setVisibility(View.INVISIBLE);
-                    emailForSend.setVisibility(View.INVISIBLE);
+                    getInfoHome.setVisibility(INVISIBLE);
+                    emailForSend.setVisibility(INVISIBLE);
                     checkStatusOfBtnPay();
                 }
             }
@@ -224,6 +227,7 @@ public class PayActivity extends AppCompatActivity {
         });
 
         saveData.setOnClickListener(View -> {
+            getInfoHome.setVisibility(INVISIBLE);
             addDataToFireBase();
         });
 
@@ -297,15 +301,17 @@ public class PayActivity extends AppCompatActivity {
         getAdapter = null;
 
         if (currentUser != null) {
-            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("userInfo").document("adress").get().addOnCompleteListener(task -> {
+            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("adress").get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        String street = document.getString("street");
-                        String house = document.getString("house");
-                        String home = document.getString("home");
-                        if (street != null && house != null && home != null) {
-                            getList.add(street + " " + house + " кв " + home);
+                    QuerySnapshot document = task.getResult();
+                    if (document != null && !document.isEmpty()) {
+                        for (DocumentSnapshot doc : document) {
+                            String street = doc.getString("street");
+                            String house = doc.getString("house");
+                            String home = doc.getString("home");
+                            if (street != null && house != null && home != null) {
+                                getList.add(street + " " + house + " кв " + home);
+                            }
                         }
                     }
                     getList.add("Электронный вариант");
@@ -327,7 +333,7 @@ public class PayActivity extends AppCompatActivity {
             getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             myGetSpinner.setAdapter(getAdapter);
         }
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(INVISIBLE);
 
     }
 
@@ -362,7 +368,6 @@ public class PayActivity extends AppCompatActivity {
                     } else {
                         showDialogForAddingCard();
                     }
-
                 } else {
                     Toast.makeText(PayActivity.this, "Ошибка загрузки данных: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -423,15 +428,24 @@ public class PayActivity extends AppCompatActivity {
             userData.put("house", house);
             userData.put("home", home);
             userData.put("city", city);
-            db.collection("users").document(currentUser.getUid()).collection("userInfo").document("adress").set(userData).addOnSuccessListener(aVoid -> {
+            db.collection("users").document(currentUser.getUid()).collection("adress").document(country).set(userData).addOnSuccessListener(aVoid -> {
                 Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
+                clearTexts();
             }).addOnFailureListener(runnable -> {
                 Toast.makeText(this, "Ошибка сохранения данных", Toast.LENGTH_SHORT).show();
             });
         }
+        getMethods();
     }
 
-    // В PayActivity
+    private void clearTexts() {
+        countryEditText.setText("");
+        streetEditText.setText("");
+        houseEditText.setText("");
+        homeEditText.setText("");
+        cityEditText.setText("");
+    }
+
     private void processPaymentAndClearCart() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
