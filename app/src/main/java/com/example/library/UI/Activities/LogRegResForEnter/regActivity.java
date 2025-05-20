@@ -53,6 +53,7 @@ public class regActivity extends AppCompatActivity {
             return insets;
         });
         Paper.init(this);
+        Paper.book().destroy();
         auth = FirebaseAuth.getInstance();
         btnReg = findViewById(R.id.btnReg);
         passwordEditText = findViewById(R.id.passwordEditText);

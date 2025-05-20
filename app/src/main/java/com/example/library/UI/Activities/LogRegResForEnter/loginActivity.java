@@ -60,6 +60,7 @@ public class loginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         auth = FirebaseAuth.getInstance();
         Paper.init(this);
+        Paper.book().destroy();
 
         forgetPassword = findViewById(R.id.forgetPassword);
         loginBtn = findViewById(R.id.loginBtn);

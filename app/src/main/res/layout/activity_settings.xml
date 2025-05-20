@@ -24,13 +24,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Настройки"
+                android:text="@string/settings"
+                android:textColor="@color/white"
                 android:textSize="25sp"
                 android:textStyle="bold|italic"
-
                 />
         </androidx.appcompat.widget.Toolbar>
-
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -43,18 +42,21 @@
         android:layout_marginRight="150sp"
         android:src="@drawable/logo" />
 
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logo"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textuserName"
         android:layout_width="wrap_content"
-        android:layout_height="80sp"
-        android:layout_below="@+id/logo"
-        android:layout_centerHorizontal="true"
-        android:hint="Ваше имя"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_name"
         android:padding="5dp"
         android:textColor="@color/black"
-
-        app:errorEnabled="true">
-
+        app:errorEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/userName"
@@ -67,53 +69,81 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textuserfam"
         android:layout_width="wrap_content"
-        android:layout_height="80sp"
-        android:layout_below="@+id/textuserName"
-        android:layout_centerHorizontal="true"
-        android:hint="Ваша фамилия"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5sp"
+        android:hint="@string/enter_fami"
         android:padding="5dp"
         android:textColor="@color/black"
 
-        app:errorEnabled="true">
-
+        app:errorEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/userfam"
             android:layout_width="300sp"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences" />
-
     </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textuserfam"
+        android:layout_below="@+id/linear_layout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15sp"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingStart="50sp"
-        android:paddingEnd="50sp">
+        android:paddingStart="30sp"
+        android:paddingEnd="25sp">
 
-        <Button
-            android:id="@+id/btnConnectCard"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Привязать карту" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnChangeEmail"
+            <Button
+                android:id="@+id/btnDeleteCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10sp"
+                android:layout_marginEnd="20sp"
+                android:text="@string/card_delete" />
+
+            <Button
+                android:id="@+id/btnConnectCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_connect" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Изменить почту" />
+            android:layout_marginTop="5sp"
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/btnDeleteGetPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10sp"
+                android:layout_marginEnd="10sp"
+                android:text="@string/change_mail" />
+
+            <Button
+                android:id="@+id/btnChangeEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/change_adress" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/save_settings_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Сохранить"
+            android:layout_marginTop="5sp"
+            android:text="@string/save"
             android:textStyle="bold|italic" />
     </LinearLayout>
 

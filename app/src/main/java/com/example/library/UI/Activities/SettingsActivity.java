@@ -42,7 +42,6 @@ public class SettingsActivity extends AppCompatActivity {
     private TextInputEditText userName, userFamily;
     private TextInputLayout textuserName, textuserfam;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,18 +62,22 @@ public class SettingsActivity extends AppCompatActivity {
         textuserName = findViewById(R.id.textuserName);
         textuserfam = findViewById(R.id.textuserfam);
 
-        checkStatusOfBtn(false);
-        validNamAndFam();
-        settingUsernameAndFam();
+        saveSettingsTv.setEnabled(false);
 
-        saveSettingsTv.setOnClickListener(view ->
-        {
-            saveUserDataToFirebaseFirestore();
-            Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
-            intent.putExtra("fromSettings", true);
-            startActivity(intent);
-            finish();
+        setupTextWatchers();
+
+        settingUsernameAndFam();
+        saveSettingsTv.setOnClickListener(view -> {
+            if (checkFormValidity()) {
+                saveUserDataToFirebaseFirestore();
+                Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
+                intent.putExtra("fromSettings", true);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Пожалуйста, заполните все обязательные поля корректно.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         changeBtn.setOnClickListener(View -> {
@@ -88,47 +91,95 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void validNamAndFam() {
-        userFamily.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!Objects.requireNonNull(userName.getText()).toString().isEmpty() && !editable.toString().isEmpty()) {
-                    checkStatusOfBtn(true);
-                } else {
-                    userFamily.setError("Поле не может быть пустым");
-                }
-            }
-        });
-    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("fromSettings", true);
+        Toast.makeText(this, "Данные не сохранены", Toast.LENGTH_SHORT).show();
         startActivity(intent);
         finish();
     }
 
+    private void setupTextWatchers() {
+        userName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                validateUserName();
+                checkFormValidity();
+            }
+        });
+
+        userFamily.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                validateUserFam();
+                checkFormValidity();
+            }
+        });
+    }
+
+    private boolean validateUserName() {
+        String name = Objects.requireNonNull(userName.getText()).toString().trim();
+        if (name.isEmpty()) {
+            textuserName.setError("Поле не может быть пустым");
+            return false;
+        } else if (name.length() < 2) {
+            textuserName.setError("Имя должно содержать не менее 2 символов");
+            return false;
+        } else {
+            textuserName.setError(null);
+            return true;
+        }
+    }
+
+    private boolean validateUserFam() {
+        String family = Objects.requireNonNull(userFamily.getText()).toString().trim();
+        if (family.isEmpty()) {
+            textuserfam.setError("Поле не может быть пустым");
+            return false;
+        } else if (family.length() < 2) { // Добавьте свои правила валидации
+            textuserfam.setError("Фамилия должна содержать не менее 2 символов");
+            return false;
+        } else {
+            textuserfam.setError(null);
+            return true;
+        }
+    }
+
+    private boolean checkFormValidity() {
+        boolean isNameValid = validateUserName();
+        boolean isFamValid = validateUserFam();
+
+        boolean formIsValid = isNameValid && isFamValid;
+        saveSettingsTv.setEnabled(formIsValid);
+        return formIsValid;
+    }
+
     private void saveUserDataToFirebaseFirestore() {
-        String name = userName.getText().toString().trim();
-        String family = userFamily.getText().toString().trim();
+        String name = Objects.requireNonNull(userName.getText()).toString().trim();
+        String family = Objects.requireNonNull(userFamily.getText()).toString().trim();
 
         if (!name.isEmpty() && !family.isEmpty()) {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null) {
-                checkStatusOfBtn(true);
                 String uid = currentUser.getUid();
                 String email = currentUser.getEmail();
 
@@ -142,7 +193,6 @@ public class SettingsActivity extends AppCompatActivity {
                         .collection("userInfo").document(email).set(userData)
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(this, "Данные успешно сохранены", Toast.LENGTH_SHORT).show();
-                            checkStatusOfBtn(true);
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(this, "Ошибка сохранения данных в Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -153,12 +203,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         } else {
             Toast.makeText(this, "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show();
-            saveSettingsTv.setEnabled(false);
         }
-    }
-
-    private void checkStatusOfBtn(boolean status) {
-        saveSettingsTv.setEnabled(status);
     }
 
     private void settingUsernameAndFam() {
@@ -181,18 +226,22 @@ public class SettingsActivity extends AppCompatActivity {
                                 String userFam = documentSnapshot.getString("userFam");
                                 userName.setText(username);
                                 userFamily.setText(userFam);
-                                checkStatusOfBtn(true);
                                 Log.d("FirebaseData", "Username (from userInfo): " + username + ", Family (from userInfo): " + userFam);
+
+                                checkFormValidity();
                             } else {
-                                checkStatusOfBtn(false);
-                                Log.d("FirebaseData", "Документ userInfo не существует");
+                                Log.d("FirebaseData", "Документ userInfo не существует"); // Если данных нет, поля останутся пустыми, и кнопка должна быть неактивна
+                                checkFormValidity();
                             }
                         }
                     });
+        } else {
+            checkFormValidity();
         }
     }
 
     private void showChangeEmailDialog() {
+        // ... (остальной код showChangeEmailDialog остается без изменений)
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Смена электронной почты");
 
