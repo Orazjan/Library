@@ -87,6 +87,26 @@ public class SettingsActivity extends AppCompatActivity {
         linear_layout_get = findViewById(R.id.linear_layout_get);
         cardList = new ArrayList<>();
         textViewTop = findViewById(R.id.textViewTop);
+        getInfoHome.setVisibility(INVISIBLE);
+
+        Intent intent = getIntent();
+        boolean fromRegActivity = intent.getBooleanExtra("fromRegActivity", false);
+        if (fromRegActivity) {
+            if (deleteCardbtn != null) {
+                deleteCardbtn.setEnabled(false);
+            }
+            if (deleteGetPointbtn != null) {
+                deleteGetPointbtn.setEnabled(false);
+            }
+            if (changeBtn != null) {
+                changeBtn.setEnabled(false);
+            }
+        } else {
+
+            if (deleteCardbtn != null) deleteCardbtn.setEnabled(true);
+            if (deleteGetPointbtn != null) deleteGetPointbtn.setEnabled(true);
+            if (changeBtn != null) changeBtn.setEnabled(true);
+        }
 
         saveSettingsTv.setEnabled(false);
         setupTextWatchers();
@@ -96,9 +116,9 @@ public class SettingsActivity extends AppCompatActivity {
             if (checkFormValidity()) {
                 saveUserDataToFirebaseFirestore();
                 Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
-                intent.putExtra("fromSettings", true);
-                startActivity(intent);
+                Intent homeIntent = new Intent(SettingsActivity.this, HomeActivity.class);
+                homeIntent.putExtra("fromSettings", true);
+                startActivity(homeIntent);
                 finish();
             } else {
                 Toast.makeText(this, "Пожалуйста, заполните все обязательные поля корректно.", Toast.LENGTH_SHORT).show();
@@ -110,21 +130,24 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         connectCart.setOnClickListener(View -> {
-            Intent intent = new Intent(SettingsActivity.this, addCardActivity.class);
-            intent.putExtra("open_add_card", true);
-            startActivity(intent);
+            Intent addCardIntent = new Intent(SettingsActivity.this, addCardActivity.class);
+            addCardIntent.putExtra("open_add_card", true);
+            startActivity(addCardIntent);
         });
 
         addGetPointbtn.setOnClickListener(View -> {
+            getInfoHome.setVisibility(VISIBLE);
             linear_layout_get.setVisibility(INVISIBLE);
             addressFormLayout.setVisibility(VISIBLE);
         });
         deleteCardbtn.setOnClickListener(View -> {
+            getInfoHome.setVisibility(VISIBLE);
             addressFormLayout.setVisibility(INVISIBLE);
             linear_layout_get.setVisibility(VISIBLE);
             getCards();
         });
         deleteGetPointbtn.setOnClickListener(View -> {
+            getInfoHome.setVisibility(VISIBLE);
             addressFormLayout.setVisibility(INVISIBLE);
             linear_layout_get.setVisibility(VISIBLE);
             getMethods();
@@ -384,6 +407,7 @@ public class SettingsActivity extends AppCompatActivity {
             adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mySpinner.setAdapter(adapter);
+            deleteGetPointbtn.setEnabled(false);
         }
     }
 
@@ -413,6 +437,8 @@ public class SettingsActivity extends AppCompatActivity {
                         adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         mySpinner.setAdapter(adapter);
+                    } else {
+                        deleteCardbtn.setEnabled(false);
                     }
 
                 } else {

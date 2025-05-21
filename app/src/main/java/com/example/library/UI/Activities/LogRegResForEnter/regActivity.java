@@ -8,10 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -137,12 +134,13 @@ public class regActivity extends AppCompatActivity {
     private void regAccaunt() {
         String useremail = Objects.requireNonNull(mailEditText.getText()).toString().trim();
         String userpassword = Objects.requireNonNull(passwordEditText.getText()).toString();
-            progressBar.setTitle("Создание аккаунта");
-            progressBar.setMessage("Пожалуйста подождите...");
-            progressBar.setCanceledOnTouchOutside(false);
-            progressBar.show();
+        progressBar.setTitle("Создание аккаунта");
+        progressBar.setMessage("Пожалуйста подождите...");
+        progressBar.setCanceledOnTouchOutside(false);
+        progressBar.show();
+        showRememberMeDialog(useremail, userpassword);
 
-            auth.createUserWithEmailAndPassword(useremail, userpassword)
+        auth.createUserWithEmailAndPassword(useremail, userpassword)
                     .addOnCompleteListener(regActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -151,8 +149,6 @@ public class regActivity extends AppCompatActivity {
                                 if (user != null) {
                                     sendVerificationEmail(user);
                                 }
-                                showRememberMeDialog(useremail, userpassword);
-                                startActivity(new Intent(regActivity.this, SettingsActivity.class));
                                 progressBar.dismiss();
                             } else {
                                 String errorMessage = "Ошибка регистрации! Неправильные данные";
@@ -160,7 +156,7 @@ public class regActivity extends AppCompatActivity {
                                     errorMessage = task.getException().getMessage();
                                     Log.e("Firebase Registration", "Error: ", task.getException());
                                 }
-                                Toast.makeText(regActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                                Log.d("ОШИБКА ПРИ РЕГИСТРАЦИИ", errorMessage);
                                 progressBar.dismiss();
                             }
                         }
@@ -178,8 +174,7 @@ public class regActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(regActivity.this, "Письмо для подтверждения отправлено на " + user.getEmail(), Toast.LENGTH_LONG).show();
-                        showConfirmationDialog(user.getEmail());
+                        Toast.makeText(regActivity.this, "Подтвердите почту", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(regActivity.this, "Не удалось отправить письмо для подтверждения.", Toast.LENGTH_SHORT).show();
                         Log.e("Email Verification", "Send failed.", task.getException());
@@ -189,48 +184,30 @@ public class regActivity extends AppCompatActivity {
         }
     }
 
-    private void showConfirmationDialog(String email) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Подтверждение действия");
-
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_email, null);
-        TextView emailTextView = view.findViewById(R.id.textViewEmail);
-        emailTextView.setText(email);
-
-        builder.setView(view);
-
-        builder.setPositiveButton("Подтвердить", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(regActivity.this, "Подтверждено. Пожалуйста, проверьте вашу почту и перейдите по ссылке.", Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(regActivity.this, "Подтверждение отменено.", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     private void showRememberMeDialog(String username, String password) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Запомнить вас для автовхода?");
 
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_remember_me, null);
-
-        builder.setView(view);
-
         builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 PaperBookWriting(username, password);
+
+                Intent intent = new Intent(regActivity.this, SettingsActivity.class);
+
+                intent.putExtra("fromRegActivity", true); // <-- Устанавливаем в true
+
+                Log.d("RegActivity", "User chose 'Yes'. Launching SettingsActivity with fromRegActivity: " + intent.getBooleanExtra("fromRegActivity", false));
+                startActivity(intent);
+                finish();
                 dialog.dismiss();
             }
         });
         builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                Intent intent = new Intent(regActivity.this, SettingsActivity.class);
+                intent.putExtra("fromRegActivity", true);
+                startActivity(intent);
+                finish();
                 dialog.dismiss();
             }
         });
