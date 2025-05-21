@@ -51,7 +51,7 @@ public class PayActivity extends AppCompatActivity {
     private TextInputLayout countryInputLayout, streetInputLayout, houseInputLayout, homeInputLayout, cityInputLayout;
     private TextInputEditText countryEditText, streetEditText, houseEditText, homeEditText, cityEditText;
     private Button saveData, pay;
-    private RelativeLayout getInfoHome;
+    private RelativeLayout getInfoHome, addressFormLayout;
     private String cardNumber;
     private boolean methodSelected, cardSelected = false;
     private ProgressBar progressBar;
@@ -88,6 +88,8 @@ public class PayActivity extends AppCompatActivity {
         getList = new ArrayList<>();
         saveData.setEnabled(false);
         pay.setEnabled(false);
+        addressFormLayout = findViewById(R.id.addressFormLayout);
+        addressFormLayout.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         paySum();
         getCards();
@@ -110,7 +112,6 @@ public class PayActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
         myGetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -322,7 +323,7 @@ public class PayActivity extends AppCompatActivity {
                 } else {
                     getList.add("Электронный вариант");
                     getList.add("Добавление адреса");
-                    Toast.makeText(PayActivity.this, "Ошибка загрузки данных: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("PayActivity", "Ошибка загрузки данных: " + task.getException().getMessage());
                     getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
                     getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     myGetSpinner.setAdapter(getAdapter);
@@ -334,7 +335,6 @@ public class PayActivity extends AppCompatActivity {
             myGetSpinner.setAdapter(getAdapter);
         }
         progressBar.setVisibility(INVISIBLE);
-
     }
 
     private void getCards() {
@@ -369,7 +369,7 @@ public class PayActivity extends AppCompatActivity {
                         showDialogForAddingCard();
                     }
                 } else {
-                    Toast.makeText(PayActivity.this, "Ошибка загрузки данных: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("PayActivity", "Ошибка загрузки данных: " + task.getException().getMessage());
                 }
             });
         }
@@ -392,7 +392,7 @@ public class PayActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(PayActivity.this, "Добавление карты отменено.", Toast.LENGTH_SHORT).show();
+                Log.d("PayActivity", "Отмена");
                 dialog.dismiss();
             }
         });
@@ -472,7 +472,7 @@ public class PayActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(this, "Пользователь не авторизован.", Toast.LENGTH_SHORT).show();
+            Log.e("PayActivity", "Пользователь не найден");
         }
     }
 

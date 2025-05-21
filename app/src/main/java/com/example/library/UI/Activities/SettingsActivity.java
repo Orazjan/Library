@@ -218,7 +218,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (family.isEmpty()) {
             textuserfam.setError("Поле не может быть пустым");
             return false;
-        } else if (family.length() < 2) { // Добавьте свои правила валидации
+        } else if (family.length() < 2) {
             textuserfam.setError("Фамилия должна содержать не менее 2 символов");
             return false;
         } else {
@@ -442,7 +442,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    Toast.makeText(this, "Ошибка загрузки данных: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("SettingsActivity", "Ошибка загрузки данных: " + task.getException().getMessage());
                 }
             });
         }

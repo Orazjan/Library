@@ -16,10 +16,8 @@ import com.example.library.R;
 import com.example.library.UI.Activities.LogRegResForEnter.loginActivity;
 import com.example.library.UI.Activities.LogRegResForEnter.regActivity;
 
-
-
 public class MainActivity extends AppCompatActivity {
-    private Button regBtn, logBtn, homeBtn;
+    private Button regBtn, logBtn;
     private ProgressDialog loadingBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         regBtn = findViewById(R.id.regBtn);
         logBtn = findViewById(R.id.logbtn);
         loadingBar = new ProgressDialog(this);
-
 
         logBtn.setOnClickListener(new View.OnClickListener() {
             @Override

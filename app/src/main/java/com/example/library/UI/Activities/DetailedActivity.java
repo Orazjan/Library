@@ -105,7 +105,7 @@ public class DetailedActivity extends AppCompatActivity {
             }
         });
         buy_now.setOnClickListener(v -> {
-            Toast.makeText(this, "Скоро будет оформление заказа", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, PayActivity.class));
         });
     }
 

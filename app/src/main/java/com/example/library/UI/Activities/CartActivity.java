@@ -1,10 +1,11 @@
 package com.example.library.UI.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +38,6 @@ public class CartActivity extends AppCompatActivity {
         btnBuy = findViewById(R.id.btnBuy);
         totalPriceView = findViewById(R.id.total_price);
         recyclerView = findViewById(R.id.cart_recycler);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CartAdapter(this, cartItems);
         recyclerView.setAdapter(adapter);
@@ -45,11 +45,9 @@ public class CartActivity extends AppCompatActivity {
         loadCartItems();
 
         btnBuy.setOnClickListener(v -> {
-            if (cartItems.isEmpty()) {
-                Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
-            } else {
+            if (!cartItems.isEmpty()) {
                 Intent intent = new Intent(this, PayActivity.class);
-                int totalPrice = total; // Получите рассчитанную сумму
+                int totalPrice = total;
                 intent.putExtra("totalPrice", totalPrice);
                 startActivity(intent);
             }
@@ -65,7 +63,7 @@ public class CartActivity extends AppCompatActivity {
                     .collection("cart")
                     .addSnapshotListener((value, error) -> {
                         if (error != null) {
-                            Toast.makeText(this, "Ошибка загрузки корзины", Toast.LENGTH_SHORT).show();
+                            Log.d("Cart activity", "Ошибка загрузки корзины");
                             return;
                         }
 
@@ -73,7 +71,6 @@ public class CartActivity extends AppCompatActivity {
                             cartItems.clear();
 
                             for (DocumentSnapshot doc : value.getDocuments()) {
-                                // ID документа теперь является ID книги
                                 String bookId = doc.getId();
                                 CartItem item = doc.toObject(CartItem.class);
                                 if (item != null) {
@@ -88,11 +85,12 @@ public class CartActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(this, "Пожалуйста, войдите в систему", Toast.LENGTH_SHORT).show();
+            Log.d("Cart activity", "Пользователь не авторизован");
             finish();
         }
     }
 
+    @SuppressLint("SetTextI18n")
     public void updateTotalPrice() {
         runOnUiThread(() -> {
 
@@ -103,7 +101,7 @@ public class CartActivity extends AppCompatActivity {
 
             if (cartItems.isEmpty()) {
                 btnBuy.setEnabled(false);
-                Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
+                btnBuy.setText("Корзина пустая");
             }
         });
     }

@@ -32,6 +32,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -116,58 +117,110 @@ public class HomeFragment extends Fragment {
                 Log.w(TAG, "Error getting documents.", e);
             }
         });
-
         GridLayoutManager PopularBookgridLayoutManager = new GridLayoutManager(getActivity(),
                 2, RecyclerView.VERTICAL, false);
         popularBooksRecycleView.setLayoutManager(PopularBookgridLayoutManager);
 
+// Убедитесь, что эти переменные объявлены на уровне класса/Fragment:
+// private List<Books> popularBooksList;
+// private ShowAllAdapter popularBooksAdapter;
+// private RecyclerView popularBooksRecycleView;
+// private Button popular_see_all; // Или TextView, в зависимости от того, что у вас popular_see_all
+
         popular_see_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popular_see_all.setVisibility(View.GONE);
-                popularBooksList = new ArrayList<>();
-                popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
-                popularBooksRecycleView.setAdapter(popularBooksAdapter);
-                db.collection("allBooks").whereEqualTo("rate", 5).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                popular_see_all.setVisibility(View.GONE); // Скрываем кнопку "Показать все"
+
+                // Очищаем существующий список и создаем новый адаптер, если необходимо.
+                // Обычно достаточно просто очистить список и вызвать notifyDataSetChanged.
+                // Если popularBooksList и popularBooksAdapter уже инициализированы глобально,
+                // то следующие 2 строки можно опустить.
+                // popularBooksList = new ArrayList<>();
+                // popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
+                // popularBooksRecycleView.setAdapter(popularBooksAdapter);
+
+                db.collection("allBooks")
+                        .whereEqualTo("rate", 5) // Получаем ВСЕ книги с рейтингом 5
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    // Очищаем список перед добавлением новых элементов,
+                                    // чтобы избежать дублирования, если список уже содержит книги.
+                                    popularBooksList.clear();
+
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Books popularBooksModel = document.toObject(Books.class);
+                                        popularBooksList.add(popularBooksModel);
+                                    }
+
+                                    // Шаг 1: Перемешиваем весь список полученных книг
+                                    // Теперь при "Показать все" книги тоже будут в случайном порядке.
+                                    Collections.shuffle(popularBooksList);
+
+                                    // Шаг 2: Уведомляем адаптер об изменениях
+                                    popularBooksAdapter.notifyDataSetChanged();
+
+                                } else {
+                                    Log.e(TAG, "Error getting all documents for 'See All': ", task.getException());
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e(TAG, "Error getting all documents for 'See All'.", e);
+                            }
+                        });
+            }
+        });
+        popularBooksList = new ArrayList<>();
+        popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
+        popularBooksRecycleView.setAdapter(popularBooksAdapter);
+
+        db.collection("allBooks")
+                .whereEqualTo("rate", 5) // Получаем все книги с рейтингом 5
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            // Временный список для всех книг с рейтингом 5
+                            List<Books> allRatedBooks = new ArrayList<>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Books popularBooksModel = document.toObject(Books.class);
-                                popularBooksList.add(popularBooksModel);
-                                popularBooksAdapter.notifyDataSetChanged();
+                                allRatedBooks.add(popularBooksModel);
                             }
+
+                            // Шаг 1: Перемешиваем весь список полученных книг
+                            Collections.shuffle(allRatedBooks);
+
+                            // Шаг 2: Очищаем текущий список в адаптере
+                            popularBooksList.clear();
+
+                            // Шаг 3: Добавляем до 4 случайных книг (или меньше, если их не хватает)
+                            int numberOfBooksToShow = Math.min(allRatedBooks.size(), 4); // Выбираем 4 или меньше, если доступно
+                            for (int i = 0; i < numberOfBooksToShow; i++) {
+                                popularBooksList.add(allRatedBooks.get(i));
+                            }
+
+                            // Шаг 4: Уведомляем адаптер об изменениях
+                            popularBooksAdapter.notifyDataSetChanged();
+
+                        } else {
+                            Log.e(TAG, "Error getting documents: ", task.getException());
                         }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+                })
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e(TAG, "Error getting documents.", e);
                     }
                 });
 
-            }
-        });
-        popularBooksList = new ArrayList<>();
-        popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
-        popularBooksRecycleView.setAdapter(popularBooksAdapter);
-        db.collection("allBooks").whereEqualTo("rate", 5).limit(4).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Books popularBooksModel = document.toObject(Books.class);
-                        popularBooksList.add(popularBooksModel);
-                        popularBooksAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting documents.", e);
-            }
-        });
         return root;
     }
 }

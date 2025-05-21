@@ -92,11 +92,7 @@ public class HomeActivity extends AppCompatActivity {
         Paper.init(this);
         FirebaseUser currentUser = auth.getCurrentUser();
 
-        if (getIntent().getBooleanExtra("fromSettings", false)) {
-            if (currentUser != null) {
-                fetchUsername(currentUser.getUid(), currentUser.getEmail());
-            }
-        } else if (getIntent().getBooleanExtra("fromlogin", false)) {
+        if (getIntent().getBooleanExtra("fromlogin", false)) {
             if (currentUser != null) {
                 fetchUsername(currentUser.getUid(), currentUser.getEmail());
             }
@@ -176,7 +172,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         } else {
             Log.i("PaperRead", "Данные email или пароля не найдены в Paper.");
-            Toast.makeText(HomeActivity.this, "Автоматический вход невозможен. Проверьте свои данные.", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, MainActivity.class));
         }
     }
