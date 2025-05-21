@@ -1,7 +1,5 @@
 package com.example.library.UI.Activities.ui.home;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,13 +34,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+
+    private static final String TAG = "HomeFragment"; // Добавьте TAG для логов
+
     CategoryAdapter categoryAdapter;
     List<CategoryModel> categoryModelList;
+    List<CategoryModel> allCategoryModelList;
     private RecyclerView catRecycleView;
+    private boolean isShowingAllCategories = false;
 
     ShowAllAdapter popularBooksAdapter;
     List<Books> popularBooksList;
+    List<Books> allPopularBooks;
     private RecyclerView popularBooksRecycleView;
+    private boolean isShowingAllPopularBooks = false;
 
     TextView category_see_all, popular_see_all;
     FirebaseFirestore db;
@@ -51,8 +56,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         FirebaseApp.initializeApp(getContext());
-        FirebaseAppCheck firebaseAppCheck;
-        firebaseAppCheck = FirebaseAppCheck.getInstance();
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
         if (BuildConfig.DEBUG) {
             firebaseAppCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance());
         } else {
@@ -61,7 +65,6 @@ public class HomeFragment extends Fragment {
 
         catRecycleView = root.findViewById(R.id.rec_category);
         popularBooksRecycleView = root.findViewById(R.id.popular_rec);
-
         category_see_all = root.findViewById(R.id.category_see_all);
         popular_see_all = root.findViewById(R.id.popular_see_all);
 
@@ -70,157 +73,142 @@ public class HomeFragment extends Fragment {
         GridLayoutManager CategoryLayoutManager = new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false);
         catRecycleView.setLayoutManager(CategoryLayoutManager);
 
-        category_see_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                category_see_all.setVisibility(View.GONE);
-                categoryModelList = new ArrayList<>();
-                categoryAdapter = new CategoryAdapter(getContext(), categoryModelList);
-                catRecycleView.setAdapter(categoryAdapter);
-                db.collection("Category_name").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                CategoryModel categoryModel = document.toObject(CategoryModel.class);
-                                categoryModelList.add(categoryModel);
-                                categoryAdapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error getting documents.", e);
-                    }
-                });
-            }
-        });
-
         categoryModelList = new ArrayList<>();
+        allCategoryModelList = new ArrayList<>();
         categoryAdapter = new CategoryAdapter(getContext(), categoryModelList);
         catRecycleView.setAdapter(categoryAdapter);
-        db.collection("Category_name").limit(4).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        CategoryModel categoryModel = document.toObject(CategoryModel.class);
-                        categoryModelList.add(categoryModel);
-                        categoryAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error getting documents.", e);
-            }
-        });
-        GridLayoutManager PopularBookgridLayoutManager = new GridLayoutManager(getActivity(),
-                2, RecyclerView.VERTICAL, false);
-        popularBooksRecycleView.setLayoutManager(PopularBookgridLayoutManager);
 
-// Убедитесь, что эти переменные объявлены на уровне класса/Fragment:
-// private List<Books> popularBooksList;
-// private ShowAllAdapter popularBooksAdapter;
-// private RecyclerView popularBooksRecycleView;
-// private Button popular_see_all; // Или TextView, в зависимости от того, что у вас popular_see_all
-
-        popular_see_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popular_see_all.setVisibility(View.GONE); // Скрываем кнопку "Показать все"
-
-                // Очищаем существующий список и создаем новый адаптер, если необходимо.
-                // Обычно достаточно просто очистить список и вызвать notifyDataSetChanged.
-                // Если popularBooksList и popularBooksAdapter уже инициализированы глобально,
-                // то следующие 2 строки можно опустить.
-                // popularBooksList = new ArrayList<>();
-                // popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
-                // popularBooksRecycleView.setAdapter(popularBooksAdapter);
-
-                db.collection("allBooks")
-                        .whereEqualTo("rate", 5) // Получаем ВСЕ книги с рейтингом 5
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    // Очищаем список перед добавлением новых элементов,
-                                    // чтобы избежать дублирования, если список уже содержит книги.
-                                    popularBooksList.clear();
-
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        Books popularBooksModel = document.toObject(Books.class);
-                                        popularBooksList.add(popularBooksModel);
-                                    }
-
-                                    // Шаг 1: Перемешиваем весь список полученных книг
-                                    // Теперь при "Показать все" книги тоже будут в случайном порядке.
-                                    Collections.shuffle(popularBooksList);
-
-                                    // Шаг 2: Уведомляем адаптер об изменениях
-                                    popularBooksAdapter.notifyDataSetChanged();
-
-                                } else {
-                                    Log.e(TAG, "Error getting all documents for 'See All': ", task.getException());
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e(TAG, "Error getting all documents for 'See All'.", e);
-                            }
-                        });
-            }
-        });
-        popularBooksList = new ArrayList<>();
-        popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
-        popularBooksRecycleView.setAdapter(popularBooksAdapter);
-
-        db.collection("allBooks")
-                .whereEqualTo("rate", 5) // Получаем все книги с рейтингом 5
+        db.collection("Category_name")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            // Временный список для всех книг с рейтингом 5
-                            List<Books> allRatedBooks = new ArrayList<>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Books popularBooksModel = document.toObject(Books.class);
-                                allRatedBooks.add(popularBooksModel);
+                                CategoryModel categoryModel = document.toObject(CategoryModel.class);
+                                allCategoryModelList.add(categoryModel);
                             }
 
-                            // Шаг 1: Перемешиваем весь список полученных книг
-                            Collections.shuffle(allRatedBooks);
+                            Collections.shuffle(allCategoryModelList); // Раскомментируйте, если хотите случайный порядок
+                            categoryModelList.clear();
 
-                            // Шаг 2: Очищаем текущий список в адаптере
-                            popularBooksList.clear();
-
-                            // Шаг 3: Добавляем до 4 случайных книг (или меньше, если их не хватает)
-                            int numberOfBooksToShow = Math.min(allRatedBooks.size(), 4); // Выбираем 4 или меньше, если доступно
-                            for (int i = 0; i < numberOfBooksToShow; i++) {
-                                popularBooksList.add(allRatedBooks.get(i));
+                            int numberOfCategoriesToShow = Math.min(allCategoryModelList.size(), 4);
+                            for (int i = 0; i < numberOfCategoriesToShow; i++) {
+                                categoryModelList.add(allCategoryModelList.get(i));
                             }
 
-                            // Шаг 4: Уведомляем адаптер об изменениях
-                            popularBooksAdapter.notifyDataSetChanged();
+                            if (allCategoryModelList.size() <= 4) {
+                                category_see_all.setVisibility(View.GONE);
+                            } else {
+                                category_see_all.setVisibility(View.VISIBLE);
+                                category_see_all.setText("Посмотреть все");
+                            }
 
+                            categoryAdapter.notifyDataSetChanged();
                         } else {
-                            Log.e(TAG, "Error getting documents: ", task.getException());
+                            Log.e(TAG, "Error getting category documents: ", task.getException());
                         }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Error getting documents.", e);
+                        Log.e(TAG, "Error getting category documents.", e);
                     }
                 });
 
+        category_see_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isShowingAllCategories) {
+                    categoryModelList.clear();
+                    int numberOfCategoriesToShow = Math.min(allCategoryModelList.size(), 4);
+                    for (int i = 0; i < numberOfCategoriesToShow; i++) {
+                        categoryModelList.add(allCategoryModelList.get(i));
+                    }
+                    category_see_all.setText("Посмотреть все");
+                    isShowingAllCategories = false;
+                } else {
+                    categoryModelList.clear();
+                    categoryModelList.addAll(allCategoryModelList);
+                    category_see_all.setText("Скрыть");
+                    isShowingAllCategories = true;
+                }
+                categoryAdapter.notifyDataSetChanged();
+            }
+        });
+
+        GridLayoutManager PopularBookgridLayoutManager = new GridLayoutManager(getActivity(),
+                2, RecyclerView.VERTICAL, false);
+        popularBooksRecycleView.setLayoutManager(PopularBookgridLayoutManager);
+
+        popularBooksList = new ArrayList<>();
+        allPopularBooks = new ArrayList<>();
+        popularBooksAdapter = new ShowAllAdapter(getContext(), popularBooksList);
+        popularBooksRecycleView.setAdapter(popularBooksAdapter);
+
+        db.collection("allBooks")
+                .whereEqualTo("rate", 5)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Books popularBooksModel = document.toObject(Books.class);
+                                allPopularBooks.add(popularBooksModel);
+                            }
+
+                            Collections.shuffle(allPopularBooks);
+
+                            popularBooksList.clear();
+
+                            int numberOfBooksToShow = Math.min(allPopularBooks.size(), 4);
+                            for (int i = 0; i < numberOfBooksToShow; i++) {
+                                popularBooksList.add(allPopularBooks.get(i));
+                            }
+
+                            if (allPopularBooks.size() <= 4) {
+                                popular_see_all.setVisibility(View.GONE);
+                            } else {
+                                popular_see_all.setVisibility(View.VISIBLE);
+                                popular_see_all.setText("Посмотреть все");
+                            }
+
+                            popularBooksAdapter.notifyDataSetChanged();
+
+                        } else {
+                            Log.e(TAG, "Error getting popular books documents: ", task.getException());
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Error getting popular books documents.", e);
+                    }
+                });
+
+        popular_see_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isShowingAllPopularBooks) {
+                    popularBooksList.clear();
+                    int numberOfBooksToShow = Math.min(allPopularBooks.size(), 4);
+                    for (int i = 0; i < numberOfBooksToShow; i++) {
+                        popularBooksList.add(allPopularBooks.get(i));
+                    }
+                    popular_see_all.setText("Посмотреть все");
+                    isShowingAllPopularBooks = false;
+                } else {
+                    popularBooksList.clear();
+                    popularBooksList.addAll(allPopularBooks);
+                    popular_see_all.setText("Скрыть");
+                    isShowingAllPopularBooks = true;
+                }
+                popularBooksAdapter.notifyDataSetChanged();
+            }
+        });
         return root;
     }
 }
