@@ -243,11 +243,11 @@ public class PayActivity extends AppCompatActivity {
 
     private void paySum() {
         if (currentUser != null) {
-            if (totalPrice == getIntent().getIntExtra("totalPrice", 0)) {
-                pay.setText("Оплатить " + totalPrice + " сом");
-            } else if (totalPrice == getIntent().getIntExtra("fromDetailed", 0)) {
+            totalPrice = getIntent().getIntExtra("totalPrice", 0);
+            if (totalPrice > 0) {
                 pay.setText("Оплатить " + totalPrice + " сом");
             }
+
         }
     }
 

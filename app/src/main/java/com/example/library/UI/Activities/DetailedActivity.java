@@ -2,6 +2,7 @@ package com.example.library.UI.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -108,7 +109,7 @@ public class DetailedActivity extends AppCompatActivity {
         buy_now.setOnClickListener(v -> {
             Intent intent = new Intent(this, PayActivity.class);
             int totalPrice = Integer.parseInt(detailed_price.getText().toString()) * Integer.parseInt(detailed_total.getText().toString());
-            intent.putExtra("fromDetailed", totalPrice);
+            intent.putExtra("totalPrice", totalPrice);
             startActivity(intent);
             finish();
         });
