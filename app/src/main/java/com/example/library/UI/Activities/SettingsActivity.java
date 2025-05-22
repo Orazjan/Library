@@ -82,12 +82,12 @@ public class SettingsActivity extends AppCompatActivity {
         deleteGetPointbtn = findViewById(R.id.btnDeleteGetPoint);
         addGetPointbtn = findViewById(R.id.btnAddGetPoint);
         getInfoHome = findViewById(R.id.getInfoHome);
-        addressFormLayout = findViewById(R.id.addressFormLayout);
+//        addressFormLayout = findViewById(R.id.addressFormLayout);
         mySpinner = findViewById(R.id.mySpinner);
         linear_layout_get = findViewById(R.id.linear_layout_get);
         cardList = new ArrayList<>();
         textViewTop = findViewById(R.id.textViewTop);
-        getInfoHome.setVisibility(INVISIBLE);
+        getInfoHome.setVisibility(VISIBLE);
 
         Intent intent = getIntent();
         boolean fromRegActivity = intent.getBooleanExtra("fromRegActivity", false);

@@ -86,6 +86,7 @@ public class DetailedActivity extends AppCompatActivity {
             if (showAllModel != null) {
                 int quantity = Integer.parseInt(detailed_total.getText().toString());
                 addToCart(showAllModel, quantity);
+                Toast.makeText(this, "Книга добавлена в корзину", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Ошибка: информация о книге не загружена", Toast.LENGTH_SHORT).show();
             }
@@ -105,7 +106,11 @@ public class DetailedActivity extends AppCompatActivity {
             }
         });
         buy_now.setOnClickListener(v -> {
-            startActivity(new Intent(this, PayActivity.class));
+            Intent intent = new Intent(this, PayActivity.class);
+            int totalPrice = Integer.parseInt(detailed_price.getText().toString()) * Integer.parseInt(detailed_total.getText().toString());
+            intent.putExtra("fromDetailed", totalPrice);
+            startActivity(intent);
+            finish();
         });
     }
 

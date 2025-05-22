@@ -55,6 +55,7 @@ public class PayActivity extends AppCompatActivity {
     private String cardNumber;
     private boolean methodSelected, cardSelected = false;
     private ProgressBar progressBar;
+    private int totalPrice;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
@@ -90,8 +91,8 @@ public class PayActivity extends AppCompatActivity {
         pay.setEnabled(false);
         addressFormLayout = findViewById(R.id.addressFormLayout);
         addressFormLayout.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
         paySum();
+        progressBar.setVisibility(View.VISIBLE);
         getCards();
         getMethods();
 
@@ -242,8 +243,11 @@ public class PayActivity extends AppCompatActivity {
 
     private void paySum() {
         if (currentUser != null) {
-            int totalPrice = getIntent().getIntExtra("totalPrice", 0);
-            pay.setText("Оплатить " + totalPrice + " сом");
+            if (totalPrice == getIntent().getIntExtra("totalPrice", 0)) {
+                pay.setText("Оплатить " + totalPrice + " сом");
+            } else if (totalPrice == getIntent().getIntExtra("fromDetailed", 0)) {
+                pay.setText("Оплатить " + totalPrice + " сом");
+            }
         }
     }
 
@@ -329,6 +333,7 @@ public class PayActivity extends AppCompatActivity {
                     myGetSpinner.setAdapter(getAdapter);
                 }
             });
+            progressBar.setVisibility(INVISIBLE);
         } else {
             getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
             getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -454,11 +459,9 @@ public class PayActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                // Для каждого элемента в корзине удаляем соответствующий документ
                                 db.collection("users").document(user.getUid()).collection("cart").document(document.getId()) // Используем ID документа корзины (который является ID книги)
                                         .delete().addOnSuccessListener(aVoid -> {
                                             Log.d("PayActivity", "Книга удалена из корзины: " + document.getId());
-                                            // Можно добавить здесь дополнительную логику после удаления каждой книги
                                         }).addOnFailureListener(e -> {
                                             Log.e("PayActivity", "Ошибка удаления книги " + document.getId() + " из корзины: " + e.getMessage());
                                             Toast.makeText(PayActivity.this, "Ошибка при удалении некоторых товаров из корзины.", Toast.LENGTH_SHORT).show();

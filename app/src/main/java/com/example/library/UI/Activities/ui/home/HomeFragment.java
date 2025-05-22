@@ -89,7 +89,6 @@ public class HomeFragment extends Fragment {
                                 allCategoryModelList.add(categoryModel);
                             }
 
-                            Collections.shuffle(allCategoryModelList); // Раскомментируйте, если хотите случайный порядок
                             categoryModelList.clear();
 
                             int numberOfCategoriesToShow = Math.min(allCategoryModelList.size(), 4);
