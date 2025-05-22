@@ -151,7 +151,6 @@ public class HomeActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     settingBtn.setVisibility(View.VISIBLE);
-                                    Toast.makeText(HomeActivity.this, "Ошибка автовхода!", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(HomeActivity.this, loginActivity.class));
                                 }
                             }
@@ -161,13 +160,11 @@ public class HomeActivity extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
                                 loadingBar.setVisibility(View.INVISIBLE);
                                 Log.e("On Login Failure", "Ошибка автовхода: " + e.getMessage());
-                                Toast.makeText(HomeActivity.this, "Ошибка автовхода: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 startActivity(new Intent(HomeActivity.this, MainActivity.class));
                             }
                         });
             } else {
                 Log.w("PaperRead", "Получены пустые email или пароль из Paper.");
-                Toast.makeText(HomeActivity.this, "Не удалось получить данные для автологина.", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(HomeActivity.this, MainActivity.class));
             }
         } else {

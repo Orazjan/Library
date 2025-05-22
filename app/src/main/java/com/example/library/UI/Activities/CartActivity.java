@@ -7,7 +7,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +44,23 @@ public class CartActivity extends AppCompatActivity {
         adapter = new CartAdapter(this, cartItems);
         recyclerView.setAdapter(adapter);
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    CartItem itemToDelete = cartItems.get(position);
+
+                    adapter.removeItemBySwipe(itemToDelete.getDocumentId());
+                }
+            }
+        }).attachToRecyclerView(recyclerView);
+
         loadCartItems();
 
         btnBuy.setOnClickListener(v -> {
@@ -52,6 +71,7 @@ public class CartActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     private void loadCartItems() {
@@ -93,15 +113,20 @@ public class CartActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void updateTotalPrice() {
         runOnUiThread(() -> {
-
+            int currentTotal = 0;
             for (CartItem item : cartItems) {
-                total += item.getBook().getPrice() * item.getQuantity();
+                if (item != null && item.getBook() != null) {
+                    currentTotal += item.getBook().getPrice() * item.getQuantity();
+                }
             }
+            total = currentTotal;
             btnBuy.setText("Купить сейчас за " + total + " сом");
 
             if (cartItems.isEmpty()) {
                 btnBuy.setEnabled(false);
                 btnBuy.setText("Корзина пустая");
+            } else {
+                btnBuy.setEnabled(true);
             }
         });
     }

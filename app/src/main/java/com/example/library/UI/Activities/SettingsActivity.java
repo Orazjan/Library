@@ -12,6 +12,7 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,11 +53,14 @@ public class SettingsActivity extends AppCompatActivity {
     private TextInputEditText userName, userFamily;
     private TextInputLayout textuserName, textuserfam;
     private RelativeLayout addressFormLayout, getInfoHome;
-    private Spinner mySpinner;
+    private Spinner mySpinner, myGetSpinner;
     private ArrayList<String> cardList;
+    private ArrayList<String> getList;
     private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> getAdapter;
     private LinearLayout linear_layout_get;
-    private TextView textViewTop;
+    private TextView textViewTop, textViewGet;
+    private String country;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
@@ -84,10 +88,16 @@ public class SettingsActivity extends AppCompatActivity {
         getInfoHome = findViewById(R.id.getInfoHome);
 //        addressFormLayout = findViewById(R.id.addressFormLayout);
         mySpinner = findViewById(R.id.mySpinner);
+        myGetSpinner = findViewById(R.id.myGetSpinner);
         linear_layout_get = findViewById(R.id.linear_layout_get);
-        cardList = new ArrayList<>();
         textViewTop = findViewById(R.id.textViewTop);
+        textViewGet = findViewById(R.id.textViewGet);
+        cardList = new ArrayList<>();
+        getList = new ArrayList<>();
         getInfoHome.setVisibility(VISIBLE);
+
+        getCards();
+        getMethods();
 
         Intent intent = getIntent();
         boolean fromRegActivity = intent.getBooleanExtra("fromRegActivity", false);
@@ -102,11 +112,45 @@ public class SettingsActivity extends AppCompatActivity {
                 changeBtn.setEnabled(false);
             }
         } else {
-
             if (deleteCardbtn != null) deleteCardbtn.setEnabled(true);
             if (deleteGetPointbtn != null) deleteGetPointbtn.setEnabled(true);
             if (changeBtn != null) changeBtn.setEnabled(true);
         }
+
+        mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = parent.getItemAtPosition(position).toString();
+                deleteCardbtn.setOnClickListener(View -> {
+                    if (selected.isEmpty() || selected.equals("Карты нет")) {
+                        cardList.add("Карта отсутствует");
+                    }
+                    deleteCard(selected);
+                    getCards();
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        myGetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = adapterView.getItemAtPosition(i).toString();
+                deleteGetPointbtn.setOnClickListener(View -> {
+                    if (selected.isEmpty() || selected.equals("Нет адресов")) {
+                        getList.add("Адрес отсутствует");
+                    }
+                    deleteAddress(selected);
+                    getMethods();
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         saveSettingsTv.setEnabled(false);
         setupTextWatchers();
@@ -153,6 +197,7 @@ public class SettingsActivity extends AppCompatActivity {
             getMethods();
         });
     }
+
 
     @Override
     public void onBackPressed() {
@@ -379,42 +424,10 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void getMethods() {
-        textViewTop.setText("Выберите адрес");
-        cardList.clear();
-        adapter = null;
-
-        if (currentUser != null) {
-            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("adress").get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    QuerySnapshot document = task.getResult();
-                    if (document != null && !document.isEmpty()) {
-                        for (DocumentSnapshot doc : document) {
-                            String street = doc.getString("street");
-                            String house = doc.getString("house");
-                            String home = doc.getString("home");
-                            if (street != null && house != null && home != null) {
-                                cardList.add(street + " " + house + " кв " + home);
-                            }
-                        }
-                    }
-                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    mySpinner.setAdapter(adapter);
-                }
-            });
-        } else {
-            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mySpinner.setAdapter(adapter);
-            deleteGetPointbtn.setEnabled(false);
-        }
-    }
-
     private void getCards() {
         textViewTop.setText("Выберите карту");
         cardList.clear();
-        adapter = null;
+        deleteCardbtn.setEnabled(false);
 
         if (currentUser != null) {
             FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("cards").get().addOnCompleteListener(task -> {
@@ -422,29 +435,98 @@ public class SettingsActivity extends AppCompatActivity {
                     boolean hasCards = false;
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         String cardNumber = document.getString("cardNumber");
-                        String cardType = document.getString("cardType");
-                        if (cardType == null) {
-                            cardType = " ";
-                        }
 
                         if (cardNumber != null) {
-                            cardList.add(cardNumber + " " + cardType);
+                            cardList.add(cardNumber);
                             hasCards = true;
                         }
                     }
 
-                    if (hasCards) {
-                        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        mySpinner.setAdapter(adapter);
-                    } else {
+                    if (!hasCards) {
+                        cardList.add("Карты нет");
                         deleteCardbtn.setEnabled(false);
+                    } else {
+                        deleteCardbtn.setEnabled(true);
                     }
 
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    mySpinner.setAdapter(adapter);
+
                 } else {
-                    Log.d("SettingsActivity", "Ошибка загрузки данных: " + task.getException().getMessage());
+                    Log.e("SettingsActivity", "Ошибка загрузки карт: " + Objects.requireNonNull(task.getException()).getMessage());
+                    cardList.add("Ошибка загрузки карт");
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    mySpinner.setAdapter(adapter);
+                }
+            });
+        } else {
+            cardList.add("Нет карт (пользователь не авторизован)");
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cardList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mySpinner.setAdapter(adapter);
+        }
+    }
+
+    private void getMethods() {
+        textViewGet.setText("Выберите адрес");
+        getList.clear();
+        getAdapter = null;
+
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("adress").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    QuerySnapshot document = task.getResult();
+                    getList.clear();
+                    if (document != null && !document.isEmpty()) {
+                        for (DocumentSnapshot doc : document) {
+                            country = doc.getString("country");
+                            String street = doc.getString("street");
+                            String house = doc.getString("house");
+                            String home = doc.getString("home");
+                            if (street != null && house != null && home != null) {
+                                getList.add(street + " " + house + " кв " + home);
+                            }
+                        }
+                    } else {
+                        getList.add("Нет адресов");
+                    }
+                    getAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getList);
+                    getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    myGetSpinner.setAdapter(getAdapter);
+                    if (getList.contains("Нет адресов")) {
+                        deleteGetPointbtn.setEnabled(false);
+                    } else {
+                        deleteGetPointbtn.setEnabled(true);
+                    }
+                } else {
+                    getList.clear();
+                    getList.add("Ошибка загрузки адресов");
+                    getAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getList);
+                    getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    myGetSpinner.setAdapter(getAdapter);
+                    deleteGetPointbtn.setEnabled(false); // В случае ошибки, кнопка должна быть неактивна
                 }
             });
         }
     }
+
+    private void deleteCard(String selected) {
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("cards").document(selected).delete();
+            Toast.makeText(this, "Карта " + selected + " удалена", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void deleteAddress(String addressIdToDelete) {
+        if (currentUser != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(currentUser.getUid()).collection("adress").document(country).delete();
+
+            Toast.makeText(this, "Адрес '" + addressIdToDelete + "' удален", Toast.LENGTH_SHORT).show();
+            getMethods();
+        }
+    }
+
 }

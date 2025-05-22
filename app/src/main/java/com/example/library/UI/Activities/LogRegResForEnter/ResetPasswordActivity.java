@@ -48,6 +48,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         });
         btnResetPassword = findViewById(R.id.btnResetPassword);
         editText = findViewById(R.id.editMailEditText);
+        editMailInputLayout = findViewById(R.id.editMailInputLayout);
         auth = FirebaseAuth.getInstance();
 
         editText.addTextChangedListener(new TextWatcher() {
@@ -87,7 +88,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         }
                     });
                 }
-
         });
     }
 
@@ -98,8 +98,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
         } else if (!Patterns.EMAIL_ADDRESS.matcher(string).matches()) {
             editMailInputLayout.setError("Введите корректную почту");
             btnResetPassword.setEnabled(false);
+        } else {
+            editMailInputLayout.setError(null);
+            btnResetPassword.setEnabled(true);
         }
-        editMailInputLayout.setError(null);
-        btnResetPassword.setEnabled(true);
     }
 }

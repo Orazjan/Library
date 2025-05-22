@@ -55,6 +55,8 @@ public class PayActivity extends AppCompatActivity {
     private String cardNumber;
     private boolean methodSelected, cardSelected = false;
     private ProgressBar progressBar;
+    private int completedTasks = 0;
+    private final int TOTAL_TASKS = 2;
     private int totalPrice;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -68,6 +70,7 @@ public class PayActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        progressBar = findViewById(R.id.progressBar);
         myCardSpinner = findViewById(R.id.myCardSpinner);
         myGetSpinner = findViewById(R.id.myGetSpinner);
         getInfoHome = findViewById(R.id.getInfoHome);
@@ -84,15 +87,16 @@ public class PayActivity extends AppCompatActivity {
         homeEditText = findViewById(R.id.homeEditText);
         saveData = findViewById(R.id.btnSaveData);
         pay = findViewById(R.id.btnPay);
-        progressBar = findViewById(R.id.progressBar);
         cardNumbersList = new ArrayList<>();
         getList = new ArrayList<>();
         saveData.setEnabled(false);
         pay.setEnabled(false);
         addressFormLayout = findViewById(R.id.addressFormLayout);
         addressFormLayout.setVisibility(View.VISIBLE);
-        paySum();
         progressBar.setVisibility(View.VISIBLE);
+        completedTasks = 0;
+
+        paySum();
         getCards();
         getMethods();
 
@@ -100,17 +104,22 @@ public class PayActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected = parent.getItemAtPosition(position).toString();
+
                 if (selected.equals("Добавить карту")) {
                     showDialogForAddingCard();
                     cardSelected = false;
-                    checkStatusOfBtnPay();
+                } else if (selected.equals("Нет карт") || selected.equals("Ошибка загрузки карт") || selected.equals("Войдите, чтобы добавить карту")) {
+                    cardSelected = false;
+                } else {
+                    cardSelected = true;
                 }
-                cardSelected = true;
                 checkStatusOfBtnPay();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                cardSelected = false;
+                checkStatusOfBtnPay();
             }
         });
         myGetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -333,50 +342,68 @@ public class PayActivity extends AppCompatActivity {
                     myGetSpinner.setAdapter(getAdapter);
                 }
             });
-            progressBar.setVisibility(INVISIBLE);
+            taskCompleted();
         } else {
             getAdapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, getList);
             getAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             myGetSpinner.setAdapter(getAdapter);
+            taskCompleted();
         }
-        progressBar.setVisibility(INVISIBLE);
     }
 
     private void getCards() {
         cardNumbersList.clear();
-        adapter = null;
 
         if (currentUser != null) {
             FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid()).collection("cards").get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    boolean hasCards = false;
+                    boolean userHasActualCards = false;
+
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        cardNumber = document.getString("cardNumber");
+                        String fetchedCardNumber = document.getString("cardNumber");
                         String cardType = document.getString("cardType");
-                        String visibleDigits;
-                        if (cardType == null) {
-                            cardType = " ";
-                        }
 
-                        if (cardNumber != null) {
-                            visibleDigits = cardNumber.substring(0, 4) + "*".repeat(cardNumber.length() - 8) + cardNumber.substring(cardNumber.length() - 4);
-                            cardNumbersList.add(visibleDigits + " " + cardType);
-                            hasCards = true;
+                        if (fetchedCardNumber != null) {
+                            String visibleDigits;
+                            if (fetchedCardNumber.length() >= 8) {
+                                visibleDigits = fetchedCardNumber.substring(0, 4) +
+                                        "*".repeat(fetchedCardNumber.length() - 8) +
+                                        fetchedCardNumber.substring(fetchedCardNumber.length() - 4);
+                            } else {
+                                visibleDigits = fetchedCardNumber;
+                            }
+
+                            String finalCardType = (cardType == null) ? "" : cardType;
+                            cardNumbersList.add(visibleDigits + " " + finalCardType);
+                            userHasActualCards = true;
                         }
                     }
 
-                    if (hasCards) {
+                    if (userHasActualCards) {
                         cardNumbersList.add("Добавить карту");
-                        adapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, cardNumbersList);
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        myCardSpinner.setAdapter(adapter);
                     } else {
-                        showDialogForAddingCard();
+                        cardNumbersList.add("Добавить карту");
                     }
+
+                    adapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, cardNumbersList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    myCardSpinner.setAdapter(adapter);
+
                 } else {
-                    Log.d("PayActivity", "Ошибка загрузки данных: " + task.getException().getMessage());
+                    Log.e("PayActivity", "Ошибка загрузки данных: " + task.getException().getMessage());
+                    cardNumbersList.add("Ошибка загрузки карт"); // Информируем пользователя
+                    adapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, cardNumbersList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    myCardSpinner.setAdapter(adapter);
                 }
+                taskCompleted();
             });
+        } else {
+            cardNumbersList.add("Войдите, чтобы добавить карту"); // Или "Нет карт (пользователь не авторизован)"
+            adapter = new ArrayAdapter<>(PayActivity.this, android.R.layout.simple_spinner_item, cardNumbersList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            myCardSpinner.setAdapter(adapter);
+            taskCompleted();
         }
     }
 
@@ -479,4 +506,10 @@ public class PayActivity extends AppCompatActivity {
         }
     }
 
+    private void taskCompleted() {
+        completedTasks++;
+        if (completedTasks >= TOTAL_TASKS) {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
 }

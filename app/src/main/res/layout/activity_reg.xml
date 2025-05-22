@@ -74,7 +74,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10sp"
             android:hint="@string/enter_password"
-            app:errorEnabled="true">
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordEditText"
@@ -83,7 +85,6 @@
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnReg"
             android:layout_width="match_parent"

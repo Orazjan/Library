@@ -73,6 +73,7 @@ public class addCardFragment extends Fragment {
         cardNumberEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                cardNumberInputLayout.setError(null);
             }
 
             @Override
@@ -103,6 +104,7 @@ public class addCardFragment extends Fragment {
         expiryMonthEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                expiryMonthInputLayout.setError(null);
             }
 
             @Override
@@ -118,6 +120,7 @@ public class addCardFragment extends Fragment {
         expiryYearEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                expiryYearInputLayout.setError(null);
             }
 
             @Override
@@ -133,6 +136,7 @@ public class addCardFragment extends Fragment {
         cvvEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                cvvInputLayout.setError(null);
             }
 
             @Override
@@ -149,7 +153,7 @@ public class addCardFragment extends Fragment {
         namefamEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                namefamInputLayout.setError(null);
             }
 
             @Override
@@ -216,53 +220,45 @@ public class addCardFragment extends Fragment {
         return "";
     }
 
-    private boolean isValidCardNumber(String cardNumber) {
-        return cardNumber.length() == 16;
-    }
-
-    private boolean isValidNameFam(String nameFam) {
-        namefamInputLayout.setErrorEnabled(false);
-        if (nameFam.isEmpty()) {
-            namefamInputLayout.setError("Введите имя и фамилию");
+    // Пример исправленного isValidExpiryMonth
+    private boolean isValidExpiryMonth(String month) {
+        if (month.isEmpty()) {
+            expiryMonthInputLayout.setError(null);
             return false;
         }
-        return true;
-    }
 
-    private boolean isValidExpiryMonth(String month) {
-        expiryMonthInputLayout.setErrorEnabled(false);
         try {
             int m = Integer.parseInt(month);
             if (m < 1 || m > 12) {
                 expiryMonthInputLayout.setError("Неверный месяц");
                 return false;
             }
-            expiryMonthInputLayout.setErrorEnabled(false);
+            expiryMonthInputLayout.setError(null);
             return true;
         } catch (NumberFormatException e) {
             expiryMonthInputLayout.setError("Неверный формат месяца");
             return false;
-        } finally {
-            if (month.isEmpty()) {
-                expiryMonthInputLayout.setError("Введите месяц");
-                return false;
-            }
         }
     }
 
     private boolean isValidExpiryYear(String year) {
         if (year.isEmpty()) {
-            expiryYearInputLayout.setError("Введите год");
-            return false;
+            expiryYearInputLayout.setError(null);
+            return false; // На начальном этапе не считать ошибкой
         }
         try {
             int y = Integer.parseInt(year);
             int currentYear = Calendar.getInstance().get(Calendar.YEAR) % 100;
             if (y < currentYear) {
+                expiryYearInputLayout.setError("Неверный год (истёк)");
+                return false;
+            }
+            if (y > currentYear + 10) {
                 expiryYearInputLayout.setError("Неверный год");
                 return false;
             }
-            expiryYearInputLayout.setErrorEnabled(false);
+
+            expiryYearInputLayout.setError(null);
             return true;
         } catch (NumberFormatException e) {
             expiryYearInputLayout.setError("Неверный формат года");
@@ -272,15 +268,49 @@ public class addCardFragment extends Fragment {
 
     private boolean isValidCvv(String cvv) {
         if (cvv.isEmpty()) {
-            cvvInputLayout.setError("Введите CVV");
+            cvvInputLayout.setError(null);
             return false;
-        } else if (cvv.length() < 3) {
-            cvvInputLayout.setError("CVV должно быть 3 символа");
+        }
+        if (cvv.length() < 3 || cvv.length() > 4 || !cvv.matches("\\d+")) {
+            cvvInputLayout.setError("CVV должно содержать 3 или 4 цифры");
             return false;
         }
         cvvInputLayout.setError(null);
         return true;
+    }
 
+    private boolean isValidNameFam(String nameFam) {
+        if (nameFam.isEmpty()) {
+            namefamInputLayout.setError(null);
+            return false;
+        }
+        if (!nameFam.matches("[a-zA-Z\\s]+")) {
+            namefamInputLayout.setError("Имя и фамилия должны содержать только буквы");
+            return false;
+        }
+        namefamInputLayout.setError(null);
+        return true;
+    }
+
+    private boolean isValidCardNumber(String cardNumber) {
+        if (cardNumber.isEmpty()) {
+            cardNumberInputLayout.setError(null); // Не показываем ошибку при пустом поле
+            return false;
+        }
+        // Длина номера карты обычно 16, но некоторые карты могут быть 13, 15 или 19
+        // Для более строгой валидации можно использовать алгоритм Луна (Luhn algorithm)
+        // Но для начала, 16 символов - это разумная проверка
+        if (cardNumber.length() != 16) {
+            cardNumberInputLayout.setError("Номер карты должен содержать 16 цифр");
+            return false;
+        }
+        // Проверка на то, что это только цифры
+        if (!cardNumber.matches("\\d+")) {
+            cardNumberInputLayout.setError("Номер карты должен содержать только цифры");
+            return false;
+        }
+        cardNumberInputLayout.setError(null);
+        return true;
     }
 
     private void updatePayButtonState() {
